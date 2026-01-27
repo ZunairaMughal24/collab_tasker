@@ -98,7 +98,7 @@ class SignInScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 32.h),
+                SizedBox(height: 14.h),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -110,7 +110,7 @@ class SignInScreen extends StatelessWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.go(AppRoutes.signUp),
+                      onPressed: () => context.push(AppRoutes.signUp),
                       child: Text(
                         'Sign Up',
                         style: AppTextStyle.bodyMedium.copyWith(

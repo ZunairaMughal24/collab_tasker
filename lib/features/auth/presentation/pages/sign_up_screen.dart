@@ -35,7 +35,7 @@ class SignUpScreen extends StatelessWidget {
                   subtitle: 'Join the team and start managing tasks together',
                 ),
 
-                SizedBox(height: 24.h),
+                SizedBox(height: 20.h),
 
                 GlassContainer(
                   padding: EdgeInsets.symmetric(
@@ -53,7 +53,7 @@ class SignUpScreen extends StatelessWidget {
                         prefixIcon: Icons.person_outline_rounded,
                       ),
 
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 14.h),
 
                       AppTextField(
                         heading: 'Email Address',
@@ -64,7 +64,7 @@ class SignUpScreen extends StatelessWidget {
                         prefixIcon: Icons.mail_outline_rounded,
                       ),
 
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 14.h),
 
                       Obx(
                         () => AppTextField(
@@ -79,7 +79,7 @@ class SignUpScreen extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 14.h),
 
                       AppTextField(
                         heading: 'Confirm Password',
@@ -90,7 +90,7 @@ class SignUpScreen extends StatelessWidget {
                         prefixIcon: Icons.lock_outline_rounded,
                       ),
 
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 30.h),
 
                       Obx(
                         () => AppButton(
@@ -103,7 +103,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 24.h),
+                SizedBox(height: 12.h),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +115,13 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.go(AppRoutes.signIn),
+                      onPressed: () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go(AppRoutes.signIn);
+                        }
+                      },
                       child: Text(
                         'Sign In',
                         style: AppTextStyle.bodyMedium.copyWith(

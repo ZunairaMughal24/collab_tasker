@@ -37,22 +37,17 @@ class SplashController extends GetxController {
         Future.delayed(const Duration(seconds: 5), () => null),
       ]);
 
-      debugPrint('SplashController: User is ${user?.uid}');
-
-      if (!_context.mounted) return;
-
       if (user != null) {
-        await _authRepository.updateFcmToken();
-        debugPrint('SplashController: Navigating to WorkspaceList');
+        try {
+          await _authRepository.updateFcmToken().timeout(
+            const Duration(seconds: 3),
+          );
+        } catch (_) {}
         _context.go(AppRoutes.workspaceList);
       } else {
-        debugPrint('SplashController: Navigating to SignIn');
         _context.go(AppRoutes.signIn);
       }
-    } catch (e, stackTrace) {
-      debugPrint('SplashController Error: $e');
-      debugPrint('StackTrace: $stackTrace');
-
+    } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Something went wrong. Please try again.';
       isLoading.value = false;
