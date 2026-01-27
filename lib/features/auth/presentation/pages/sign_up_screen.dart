@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/core/utils/padding_extension.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/core/utils/validators.dart';
@@ -10,6 +10,7 @@ import 'package:collab_tasker/widgets/glass_container.dart';
 import 'package:collab_tasker/features/auth/presentation/controllers/register_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:collab_tasker/config/app_router.dart';
 import 'package:collab_tasker/widgets/app_button.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_header.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
@@ -25,47 +26,40 @@ class SignUpScreen extends StatelessWidget {
       body: AuthBackground(
         child: SafeArea(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              20.heightBox,
-              IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
               20.heightBox,
 
               const AuthHeader(
                 title: 'Create Account',
                 subtitle: 'Join the team and start managing tasks together',
               ),
-              32.heightBox,
+              16.heightBox,
 
-              // Form inside Glass Container
               GlassContainer(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 24.h),
                 borderRadius: 24,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     AppTextField(
                       heading: 'Full Name',
                       hintText: 'Enter your full name',
                       controller: controller.nameController,
                       validator: Validators.nameValidator,
-                      prefixIcon: null, // Can add icons if available
+                      prefixIcon: Icons.person_outline_rounded,
                     ),
-                    20.heightBox,
+                    16.heightBox,
                     AppTextField(
                       heading: 'Email Address',
                       hintText: 'Enter your email',
                       controller: controller.emailController,
                       validator: Validators.emailValidator,
                       keyboardType: TextInputType.emailAddress,
+                      prefixIcon: Icons.mail_outline_rounded,
                     ),
-                    20.heightBox,
+                    16.heightBox,
                     Obx(
                       () => AppTextField(
                         heading: 'Password',
@@ -75,15 +69,17 @@ class SignUpScreen extends StatelessWidget {
                         isPasswordField: true,
                         isObscure: !controller.isPasswordVisible.value,
                         onSuffixTap: controller.togglePasswordVisibility,
+                        prefixIcon: Icons.lock_outline_rounded,
                       ),
                     ),
-                    20.heightBox,
+                    16.heightBox,
                     AppTextField(
                       heading: 'Confirm Password',
-                      hintText: 'Repeat your password',
+                      hintText: 'Re-enter your password',
                       controller: controller.confirmPasswordController,
                       isPasswordField: true,
                       isObscure: true,
+                      prefixIcon: Icons.lock_outline_rounded,
                     ),
 
                     32.heightBox,
@@ -98,7 +94,7 @@ class SignUpScreen extends StatelessWidget {
                 ),
               ),
 
-              32.heightBox,
+              12.heightBox,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -109,7 +105,7 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ),
                   InkWell(
-                    onTap: () => context.pop(),
+                    onTap: () => context.go(AppRoutes.signIn),
                     child: Text(
                       'Sign In',
                       style: AppTextStyle.bodyMedium.copyWith(

@@ -24,7 +24,6 @@ class RegisterController extends GetxController {
   }
 
   Future<void> register(BuildContext context) async {
-    // Clear previous error
     errorMessage.value = '';
 
     final nameError = Validators.nameValidator(nameController.text);
@@ -59,9 +58,16 @@ class RegisterController extends GetxController {
 
       if (userCredential != null) {
         AppSnackbar.showSuccess('Account created successfully');
-        await userCredential.user?.updateDisplayName(
-          nameController.text.trim(),
-        );
+
+        final user = userCredential.user;
+        if (user != null) {
+          await user.updateDisplayName(nameController.text.trim());
+          await _authRepository.saveUserData(
+            user.uid,
+            user.email!,
+            nameController.text.trim(),
+          );
+        }
 
         if (context.mounted) {
           context.go(AppRoutes.workspaceList);

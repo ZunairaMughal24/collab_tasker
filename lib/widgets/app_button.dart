@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppButton extends StatelessWidget {
@@ -31,10 +31,10 @@ class AppButton extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.5),
+              color: AppColors.primary.withValues(alpha: 0.5),
               blurRadius: 20,
-              offset: const Offset(0, 8),
-              spreadRadius: 2,
+              offset: const Offset(0, 5),
+              spreadRadius: 1,
             ),
           ],
         ),

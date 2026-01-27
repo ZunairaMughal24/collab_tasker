@@ -22,7 +22,6 @@ class LoginController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    // Clear previous error
     errorMessage.value = '';
 
     final emailError = Validators.emailValidator(emailController.text);
@@ -42,6 +41,7 @@ class LoginController extends GetxController {
       );
 
       if (user != null) {
+        await _authRepository.updateFcmToken();
         AppSnackbar.showSuccess('Logged in successfully');
         if (context.mounted) {
           context.go(AppRoutes.workspaceList);

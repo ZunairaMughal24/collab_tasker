@@ -29,6 +29,16 @@ class GlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius.r),
         child: BackdropFilter(
@@ -36,31 +46,22 @@ class GlassContainer extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(opacity),
+              color: AppColors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(borderRadius.r),
-              border: borderGradient == null
-                  ? Border.all(
-                      color: borderColor ?? AppColors.glassBorder,
-                      width: 1.0,
-                    )
-                  : null,
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.12),
+                width: 1.5,
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.white.withValues(alpha: 0.1),
+                  AppColors.white.withValues(alpha: 0.02),
+                ],
+              ),
             ),
-            child: borderGradient != null
-                ? Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius.r),
-                      gradient: borderGradient,
-                    ),
-                    padding: const EdgeInsets.all(1), // Border width
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.glassBase.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(borderRadius.r - 1),
-                      ),
-                      child: child,
-                    ),
-                  )
-                : child,
+            child: child,
           ),
         ),
       ),

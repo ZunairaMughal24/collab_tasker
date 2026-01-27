@@ -14,9 +14,9 @@ abstract class WorkspaceRepository {
     int limit = 10,
     dynamic lastDoc,
   });
-  Future<void> createWorkspace(Workspace workspace);
+  Future<String> createWorkspace(Workspace workspace);
   Stream<List<WorkspaceTask>> getTasks(String workspaceId);
-  Future<void> addTask(String workspaceId, WorkspaceTask task);
+  Future<String> addTask(String workspaceId, WorkspaceTask task);
   Future<void> updateTask(String workspaceId, WorkspaceTask task);
   Future<void> addMember(String workspaceId, String email);
 }

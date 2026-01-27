@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
@@ -10,7 +10,7 @@ class AppSnackbar {
   static void showSuccess(String message) {
     _show(
       message: message,
-      backgroundColor: AppColors.success.withOpacity(0.9),
+      backgroundColor: AppColors.success.withValues(alpha: 0.9),
       icon: Icons.check_circle_outline,
     );
   }
@@ -18,7 +18,7 @@ class AppSnackbar {
   static void showError(String message) {
     _show(
       message: message,
-      backgroundColor: AppColors.error.withOpacity(0.9),
+      backgroundColor: AppColors.error.withValues(alpha: 0.9),
       icon: Icons.error_outline,
     );
   }

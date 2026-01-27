@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 
@@ -13,8 +13,10 @@ class AppTextField extends StatelessWidget {
   final bool isPasswordField;
   final bool isObscure;
   final TextInputType? keyboardType;
-  final String? prefixIcon;
-  final String? suffixIcon;
+  final IconData? prefixIcon;
+  final String? prefixIconPath;
+  final IconData? suffixIcon;
+  final String? suffixIconPath;
   final VoidCallback? onSuffixTap;
   final bool readOnly;
   final int maxLines;
@@ -31,7 +33,9 @@ class AppTextField extends StatelessWidget {
     this.isObscure = false,
     this.keyboardType,
     this.prefixIcon,
+    this.prefixIconPath,
     this.suffixIcon,
+    this.suffixIconPath,
     this.onSuffixTap,
     this.readOnly = false,
     this.maxLines = 1,
@@ -68,24 +72,13 @@ class AppTextField extends StatelessWidget {
             hintStyle: AppTextStyle.bodyMedium.copyWith(
               color: AppColors.hintText,
             ),
-            fillColor: fillColor ?? AppColors.textFieldFill.withOpacity(0.5),
-            filled: true,
+            fillColor: fillColor,
+            filled: fillColor != null,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
               vertical: 18.h,
             ),
-            prefixIcon: prefixIcon != null
-                ? Padding(
-                    padding: EdgeInsets.all(12.w),
-                    child: SvgPicture.asset(
-                      prefixIcon ?? '',
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.textSecondary,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  )
-                : null,
+            prefixIcon: _buildPrefixIcon(),
             suffixIcon: _buildSuffixIcon(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.r),
@@ -113,20 +106,49 @@ class AppTextField extends StatelessWidget {
     );
   }
 
+  Widget? _buildPrefixIcon() {
+    final path = prefixIconPath;
+    if (path != null) {
+      return Padding(
+        padding: EdgeInsets.all(12.w),
+        child: SvgPicture.asset(
+          path,
+          colorFilter: const ColorFilter.mode(
+            AppColors.textSecondary,
+            BlendMode.srcIn,
+          ),
+        ),
+      );
+    }
+    final icon = prefixIcon;
+    if (icon != null) {
+      return Icon(icon, color: AppColors.textSecondary, size: 20.w);
+    }
+    return null;
+  }
+
   Widget? _buildSuffixIcon() {
-    if (suffixIcon != null) {
+    final path = suffixIconPath;
+    if (path != null) {
       return InkWell(
         onTap: onSuffixTap,
         child: Padding(
           padding: EdgeInsets.all(12.w),
           child: SvgPicture.asset(
-            suffixIcon!,
+            path,
             colorFilter: const ColorFilter.mode(
               AppColors.textSecondary,
               BlendMode.srcIn,
             ),
           ),
         ),
+      );
+    }
+    final icon = suffixIcon;
+    if (icon != null) {
+      return IconButton(
+        icon: Icon(icon, color: AppColors.textSecondary, size: 20.w),
+        onPressed: onSuffixTap,
       );
     }
     if (isPasswordField) {

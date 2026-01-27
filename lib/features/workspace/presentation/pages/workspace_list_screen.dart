@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/core/utils/padding_extension.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
@@ -10,6 +10,7 @@ import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/config/app_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WorkspaceListScreen extends StatelessWidget {
   const WorkspaceListScreen({super.key});
@@ -17,54 +18,73 @@ class WorkspaceListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(WorkspaceListController());
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      key: scaffoldKey,
+      drawer: _buildDrawer(context),
       body: AuthBackground(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               20.heightBox,
-              // Header
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  GestureDetector(
+                    onTap: () => scaffoldKey.currentState?.openDrawer(),
+                    child: Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.menu_rounded,
+                        color: AppColors.white,
+                        size: 24.w,
+                      ),
+                    ),
+                  ),
+                  16.widthBox,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hello, Alex!', // This can be dynamic from AuthController
+                        'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
                         style: AppTextStyle.displayMedium.copyWith(
-                          fontSize: 24.sp,
+                          fontSize: 22.sp,
                         ),
                       ),
-                      4.heightBox,
                       Text(
                         'Manage your team tasks effectively',
-                        style: AppTextStyle.bodyMedium.copyWith(
+                        style: AppTextStyle.bodySmall.copyWith(
                           color: AppColors.textSecondary,
+                          fontSize: 13,
                         ),
                       ),
                     ],
-                  ),
-                  CircleAvatar(
-                    radius: 24.r,
-                    backgroundColor: AppColors.glassBackground,
-                    child: Icon(Icons.person, color: Colors.white, size: 24.w),
                   ),
                 ],
               ).px(24.w),
 
               24.heightBox,
-              // Search Bar
+
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 24.w),
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 height: 50.h,
                 decoration: BoxDecoration(
-                  color: AppColors.glassBackground,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.glassBorder),
+                  color: AppColors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -83,6 +103,8 @@ class WorkspaceListScreen extends StatelessWidget {
                             color: AppColors.textSecondary,
                           ),
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
                         ),
                       ),
                     ),
@@ -90,8 +112,8 @@ class WorkspaceListScreen extends StatelessWidget {
                 ),
               ),
 
-              32.heightBox,
-              // List
+              22.heightBox,
+
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
@@ -104,22 +126,25 @@ class WorkspaceListScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.workspaces_outline,
+                            Icons.dashboard_customize_outlined,
                             size: 64.w,
-                            color: AppColors.textSecondary,
+                            color: AppColors.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
-                          16.heightBox,
+                          24.heightBox,
                           Text(
-                            'No workspaces yet',
-                            style: AppTextStyle.bodyLarge.copyWith(
-                              color: AppColors.textSecondary,
+                            'No Workspaces Found',
+                            style: AppTextStyle.displayMedium.copyWith(
+                              fontSize: 20.sp,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           8.heightBox,
                           Text(
-                            'Create your first workspace to start collaborating',
+                            'Create a workspace to collaborate with your team and master your goals together.',
                             textAlign: TextAlign.center,
-                            style: AppTextStyle.bodySmall.copyWith(
+                            style: AppTextStyle.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),
                           ).px(32.w),
@@ -160,7 +185,64 @@ class WorkspaceListScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.addWorkspace),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    return Drawer(
+      backgroundColor: AppColors.background,
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(color: Colors.transparent),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              child: Icon(
+                Icons.person_outline_rounded,
+                color: AppColors.primary,
+                size: 40.w,
+              ),
+              radius: 40.r,
+            ),
+            accountName: Text(
+              user?.displayName ?? 'Collab Member',
+              style: AppTextStyle.bodyLarge,
+            ),
+            accountEmail: Text(
+              user?.email ?? 'member@collabtasker.com',
+              style: AppTextStyle.bodySmall,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline, color: Colors.white),
+            title: Text('My Profile', style: AppTextStyle.bodyMedium),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined, color: Colors.white),
+            title: Text('Settings', style: AppTextStyle.bodyMedium),
+            onTap: () {},
+          ),
+          const Spacer(),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: AppColors.error),
+            title: Text(
+              'Logout',
+              style: AppTextStyle.bodyMedium.copyWith(color: AppColors.error),
+            ),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                context.go(AppRoutes.signIn);
+              }
+            },
+          ),
+          30.heightBox,
+        ],
       ),
     );
   }

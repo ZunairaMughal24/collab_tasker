@@ -5,7 +5,7 @@ class Workspace {
   final String createdBy;
   final List<String> members;
   final DateTime createdAt;
-  final double progress; // Added for UI progress rings
+  final double progress;
 
   const Workspace({
     required this.id,

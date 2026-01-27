@@ -31,8 +31,8 @@ class AuthBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.15),
-                  AppColors.primary.withOpacity(0),
+                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.primary.withValues(alpha: 0),
                 ],
               ),
             ),
@@ -48,15 +48,14 @@ class AuthBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppColors.secondary.withOpacity(0.1),
-                  AppColors.secondary.withOpacity(0),
+                  AppColors.secondary.withValues(alpha: 0.1),
+                  AppColors.secondary.withValues(alpha: 0),
                 ],
               ),
             ),
           ),
         ),
 
-        // Main content
         child,
       ],
     );

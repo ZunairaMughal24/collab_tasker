@@ -4,8 +4,9 @@ import 'package:collab_tasker/features/workspace/data/models/workspace_task_mode
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace_task.dart';
 import 'package:collab_tasker/features/workspace/domain/repositories/workspace_repository.dart';
+import 'package:collab_tasker/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
-/// Workspace repository implementation - directly uses Firestore, no datasource layer.
 class WorkspaceRepositoryImpl implements WorkspaceRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -37,7 +38,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   @override
-  Future<void> createWorkspace(Workspace workspace) async {
+  Future<String> createWorkspace(Workspace workspace) async {
     final model = WorkspaceModel(
       id: workspace.id,
       name: workspace.name,
@@ -47,7 +48,10 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       createdAt: workspace.createdAt,
       progress: workspace.progress,
     );
-    await _firestore.collection('workspaces').add(model.toFirestore());
+    final docRef = await _firestore
+        .collection('workspaces')
+        .add(model.toFirestore());
+    return docRef.id;
   }
 
   @override
@@ -66,7 +70,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   @override
-  Future<void> addTask(String workspaceId, WorkspaceTask task) async {
+  Future<String> addTask(String workspaceId, WorkspaceTask task) async {
     final model = WorkspaceTaskModel(
       id: task.id,
       title: task.title,
@@ -78,11 +82,12 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       dueDate: task.dueDate,
       createdAt: task.createdAt,
     );
-    await _firestore
+    final docRef = await _firestore
         .collection('workspaces')
         .doc(workspaceId)
         .collection('tasks')
         .add(model.toFirestore());
+    return docRef.id;
   }
 
   @override
@@ -108,6 +113,20 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
 
   @override
   Future<void> addMember(String workspaceId, String email) async {
-    // TODO: Implement with cloud function or user search
+    try {
+      final authRepo = AuthRepositoryImpl();
+      final uid = await authRepo.getUIDByEmail(email);
+
+      if (uid == null) {
+        AppSnackbar.showError('No user found with this email.');
+        return;
+      }
+
+      await _firestore.collection('workspaces').doc(workspaceId).update({
+        'members': FieldValue.arrayUnion([uid]),
+      });
+    } catch (e) {
+      AppSnackbar.showError('Failed to add member: ${e.toString()}');
+    }
   }
 }

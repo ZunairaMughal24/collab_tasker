@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/features/splash/presentation/controllers/splash_controller.dart';
 
-/// Splash screen - pure presentation, zero business logic.
-/// All navigation and auth logic is in SplashController.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
@@ -18,7 +16,6 @@ class SplashScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Center(
         child: Obx(() {
-          // Error state with retry
           if (controller.hasError.value) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +52,6 @@ class SplashScreen extends StatelessWidget {
             );
           }
 
-          // Loading state (default)
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

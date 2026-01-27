@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:collab_tasker/features/auth/domain/repositories/auth_repository.dart';
 import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
-/// Auth repository implementation - directly uses Firebase, no datasource layer.
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Future<UserCredential?> signInWithEmailAndPassword(
@@ -58,6 +61,65 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  @override
+  Future<void> saveUserData(String uid, String email, String name) async {
+    try {
+      String? fcmToken;
+      try {
+        fcmToken = await _firebaseMessaging.getToken();
+      } catch (_) {}
+
+      await _firestore.collection('users').doc(uid).set({
+        'uid': uid,
+        'email': email,
+        'name': name,
+        'fcmToken': fcmToken,
+        'lastActive': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      AppSnackbar.showError('Error saving user data: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> updateFcmToken() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) return;
+
+      final token = await _firebaseMessaging.getToken();
+      if (token != null) {
+        await _firestore.collection('users').doc(user.uid).set({
+          'fcmToken': token,
+          'lastActive': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      debugPrint('Error updating FCM token: $e');
+    }
+  }
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  @override
+  Future<String?> getUIDByEmail(String email) async {
+    try {
+      final snapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first.id;
+      }
+      return null;
+    } catch (e) {
+      AppSnackbar.showError('Error looking up user: ${e.toString()}');
+      return null;
+    }
+  }
 
   void _handleAuthError(FirebaseAuthException e) {
     String message = 'Authentication failed';

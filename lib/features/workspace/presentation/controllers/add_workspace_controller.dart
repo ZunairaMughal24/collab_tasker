@@ -27,7 +27,7 @@ class AddWorkspaceController extends GetxController {
     isLoading.value = true;
     try {
       final workspace = Workspace(
-        id: '', // Firestore generates this
+        id: '',
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
         createdBy: user.uid,
@@ -45,14 +45,16 @@ class AddWorkspaceController extends GetxController {
               );
             },
           );
-      AppSnackbar.showSuccess('Workspace created successfully');
 
-      // Refresh list
+      nameController.clear();
+      descriptionController.clear();
+
       if (Get.isRegistered<WorkspaceListController>()) {
         Get.find<WorkspaceListController>().refreshWorkspaces();
       }
 
       if (context.mounted) {
+        AppSnackbar.showSuccess('Workspace Created Successfully!');
         context.pop();
       }
     } catch (e) {

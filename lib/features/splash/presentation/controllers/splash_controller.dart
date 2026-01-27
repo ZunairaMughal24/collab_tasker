@@ -5,8 +5,6 @@ import 'package:collab_tasker/config/app_router.dart';
 import 'package:collab_tasker/features/auth/domain/repositories/auth_repository.dart';
 import 'package:collab_tasker/features/auth/data/repositories/auth_repository_impl.dart';
 
-/// Controller for splash screen - handles auth check and navigation.
-/// All business logic is here, UI is pure presentation.
 class SplashController extends GetxController {
   final AuthRepository _authRepository = AuthRepositoryImpl();
 
@@ -23,7 +21,7 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Delay to show splash branding, then check auth
+
     Future.delayed(const Duration(seconds: 2), () {
       checkAuthAndNavigate();
     });
@@ -34,7 +32,6 @@ class SplashController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
 
-      // Get current user with timeout protection
       final user = await Future.any([
         Future.value(_authRepository.currentUser),
         Future.delayed(const Duration(seconds: 5), () => null),
@@ -45,6 +42,7 @@ class SplashController extends GetxController {
       if (!_context.mounted) return;
 
       if (user != null) {
+        await _authRepository.updateFcmToken();
         debugPrint('SplashController: Navigating to WorkspaceList');
         _context.go(AppRoutes.workspaceList);
       } else {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/core/utils/padding_extension.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
@@ -29,9 +29,9 @@ class AddWorkspaceScreen extends StatelessWidget {
               IconButton(
                 onPressed: () => context.pop(),
                 icon: const Icon(
-                  Icons.arrow_back_ios_new,
+                  Icons.chevron_left_rounded,
                   color: Colors.white,
-                  size: 20,
+                  size: 28,
                 ),
               ),
               20.heightBox,
@@ -55,26 +55,15 @@ class AddWorkspaceScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Workspace Name',
-                      style: AppTextStyle.labelLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    12.heightBox,
                     AppTextField(
+                      heading: 'Workspace Name',
                       hintText: 'e.g. Project Phoenix',
                       controller: controller.nameController,
+                      prefixIcon: Icons.workspace_premium_outlined,
                     ),
                     24.heightBox,
-                    Text(
-                      'Description',
-                      style: AppTextStyle.labelLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    12.heightBox,
                     AppTextField(
+                      heading: 'Description',
                       hintText: 'What is this workspace about?',
                       controller: controller.descriptionController,
                       maxLines: 4,
@@ -82,26 +71,15 @@ class AddWorkspaceScreen extends StatelessWidget {
                     40.heightBox,
                     Obx(
                       () => AppButton(
-                        text: 'Save & Invite',
+                        text: 'Save Workspace',
                         onPressed: () => controller.createWorkspace(context),
                         isLoading: controller.isLoading.value,
-                      ),
-                    ),
-                    16.heightBox,
-                    Center(
-                      child: TextButton(
-                        onPressed: () => context.pop(),
-                        child: Text(
-                          'Add members later',
-                          style: AppTextStyle.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
                       ),
                     ),
                   ],
                 ),
               ).px(24.w),
+              24.heightBox,
             ],
           ).scrollVertical(),
         ),

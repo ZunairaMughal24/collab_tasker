@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,26 +13,33 @@ class AuthHeader extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    this.icon = Icons.task_alt,
+    this.icon = Icons.groups_2_outlined,
   });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          20.heightBox,
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.05),
+              color: AppColors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.glassBorder),
             ),
             child: Icon(icon, size: 48.w, color: AppColors.primary),
           ),
-          32.heightBox,
-          Text(title, style: AppTextStyle.displayMedium),
-          8.heightBox,
+          16.heightBox,
+          Text(
+            title,
+            style: AppTextStyle.displayMedium,
+            textAlign: TextAlign.center,
+          ),
+          4.heightBox,
           Text(
             subtitle,
             style: AppTextStyle.bodyMedium.copyWith(

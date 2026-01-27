@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
-import 'package:collab_tasker/core/theme/app_styles.dart';
+import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/core/utils/padding_extension.dart';
 import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/core/utils/validators.dart';
@@ -13,7 +13,6 @@ import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/config/app_router.dart';
 import 'package:collab_tasker/widgets/app_button.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_header.dart';
-import 'package:collab_tasker/features/auth/presentation/widgets/social_auth_button.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -27,20 +26,21 @@ class SignInScreen extends StatelessWidget {
       body: AuthBackground(
         child: SafeArea(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              60.heightBox,
+              80.heightBox,
               const AuthHeader(
                 title: 'Welcome Back',
                 subtitle: 'Sign in to continue your collaborative journey',
               ),
-              40.heightBox,
+              20.heightBox,
 
-              // Form inside Glass Container
               GlassContainer(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 32.h),
                 borderRadius: 24,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     AppTextField(
                       heading: 'Email Address',
@@ -48,8 +48,9 @@ class SignInScreen extends StatelessWidget {
                       controller: controller.emailController,
                       validator: Validators.emailValidator,
                       keyboardType: TextInputType.emailAddress,
+                      prefixIcon: Icons.mail_outline_rounded,
                     ),
-                    24.heightBox,
+                    16.heightBox,
                     Obx(
                       () => AppTextField(
                         heading: 'Password',
@@ -59,6 +60,7 @@ class SignInScreen extends StatelessWidget {
                         isPasswordField: true,
                         isObscure: !controller.isPasswordVisible.value,
                         onSuffixTap: controller.togglePasswordVisibility,
+                        prefixIcon: Icons.lock_outline_rounded,
                       ),
                     ),
 
@@ -90,46 +92,8 @@ class SignInScreen extends StatelessWidget {
                 ),
               ),
 
-              32.heightBox,
+              14.heightBox,
 
-              // Social Logins
-              Row(
-                children: [
-                  const Expanded(
-                    child: Divider(color: AppColors.glassBorder, thickness: 1),
-                  ),
-                  Text(
-                    'Or continue with',
-                    style: AppTextStyle.labelMedium,
-                  ).px16(),
-                  const Expanded(
-                    child: Divider(color: AppColors.glassBorder, thickness: 1),
-                  ),
-                ],
-              ),
-
-              32.heightBox,
-              Row(
-                children: [
-                  Expanded(
-                    child: SocialAuthButton(
-                      icon: 'assets/svg/google_logo.svg',
-                      label: 'Google',
-                      onTap: () {},
-                    ),
-                  ),
-                  20.widthBox,
-                  Expanded(
-                    child: SocialAuthButton(
-                      icon: 'assets/svg/apple_logo.svg',
-                      label: 'Apple',
-                      onTap: () {},
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -140,7 +104,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   InkWell(
-                    onTap: () => context.push(AppRoutes.signUp),
+                    onTap: () => context.go(AppRoutes.signUp),
                     child: Text(
                       'Sign Up',
                       style: AppTextStyle.bodyMedium.copyWith(

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Brand Colors
   static const Color primary = Color(0xFF6366F1); // Indigo
-  static const Color secondary = Color(0xFFEC4899); // Pink
-  static const Color accent = Color(0xFF8B5CF6); // Violet
+  static const Color secondary = Color(0xFFEC4899);
+  static const Color accent = Color(0xFF8B5CF6);
   static const Color neonCyan = Color(0xFF00E5FF);
   static const Color neonMagenta = Color(0xFFFF2E93);
 

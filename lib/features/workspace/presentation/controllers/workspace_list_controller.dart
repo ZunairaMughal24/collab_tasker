@@ -54,7 +54,7 @@ class WorkspaceListController extends GetxController {
         'Error',
         'Failed to load workspaces: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } finally {
