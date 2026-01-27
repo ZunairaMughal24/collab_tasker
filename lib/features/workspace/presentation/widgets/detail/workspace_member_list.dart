@@ -13,13 +13,23 @@ class WorkspaceMemberList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => ListView.builder(
+    return Obx(() {
+      final members = controller.workspace.value.members;
+      final pendingMembers = controller.workspace.value.pendingMembers;
+      final totalCount = members.length + pendingMembers.length;
+
+      return ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
-        itemCount: controller.workspace.value.members.length,
+        itemCount: totalCount,
         itemBuilder: (context, index) {
-          final memberUid = controller.workspace.value.members[index];
-          final profile = controller.memberProfiles[memberUid];
+          final isPending = index >= members.length;
+          final memberUid = !isPending ? members[index] : null;
+          final pendingEmail = isPending
+              ? pendingMembers[index - members.length]
+              : null;
+          final profile = memberUid != null
+              ? controller.memberProfiles[memberUid]
+              : null;
 
           return GlassContainer(
             margin: EdgeInsets.only(bottom: 12.h),
@@ -28,8 +38,15 @@ class WorkspaceMemberList extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  child: (profile?['name'] as String? ?? '').isNotEmpty
+                  backgroundColor: isPending
+                      ? AppColors.textSecondary.withValues(alpha: 0.1)
+                      : AppColors.primary.withValues(alpha: 0.1),
+                  child: isPending
+                      ? const Icon(
+                          Icons.mail_outline_rounded,
+                          color: AppColors.textSecondary,
+                        )
+                      : (profile?['name'] as String? ?? '').isNotEmpty
                       ? Text(
                           (profile!['name'] as String)[0].toUpperCase(),
                           style: const TextStyle(color: AppColors.primary),
@@ -44,14 +61,49 @@ class WorkspaceMemberList extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        profile?['name'] ?? 'Loading...',
-                        style: AppTextStyle.bodyMedium.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              isPending
+                                  ? 'Pending Invite'
+                                  : (profile?['name'] ?? 'Loading...'),
+                              style: AppTextStyle.bodyMedium.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isPending
+                                    ? AppColors.textSecondary
+                                    : null,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isPending) ...[
+                            SizedBox(width: 8.w),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 6.w,
+                                vertical: 2.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.accent.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'PENDING',
+                                style: AppTextStyle.bodySmall.copyWith(
+                                  color: AppColors.accent,
+                                  fontSize: 8.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       Text(
-                        profile?['email'] ?? memberUid,
+                        isPending
+                            ? pendingEmail!
+                            : (profile?['email'] ?? memberUid!),
                         style: AppTextStyle.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -71,7 +123,7 @@ class WorkspaceMemberList extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
+      );
+    });
   }
 }

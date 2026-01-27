@@ -8,6 +8,7 @@ class WorkspaceModel extends Workspace {
     required super.description,
     required super.createdBy,
     required super.members,
+    required super.pendingMembers,
     required super.createdAt,
     super.progress,
   });
@@ -20,6 +21,7 @@ class WorkspaceModel extends Workspace {
       description: data['description'] ?? '',
       createdBy: data['createdBy'] ?? '',
       members: List<String>.from(data['members'] ?? []),
+      pendingMembers: List<String>.from(data['pendingMembers'] ?? []),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       progress: (data['progress'] ?? 0.0).toDouble(),
     );
@@ -31,6 +33,7 @@ class WorkspaceModel extends Workspace {
       'description': description,
       'createdBy': createdBy,
       'members': members,
+      'pendingMembers': pendingMembers,
       'createdAt': Timestamp.fromDate(createdAt),
       'progress': progress,
     };

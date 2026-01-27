@@ -41,6 +41,14 @@ class LoginController extends GetxController {
       );
 
       if (user != null) {
+        final firebaseUser = user.user;
+        if (firebaseUser != null) {
+          await _authRepository.saveUserData(
+            firebaseUser.uid,
+            firebaseUser.email ?? '',
+            firebaseUser.displayName ?? '',
+          );
+        }
         await _authRepository.updateFcmToken();
         AppSnackbar.showSuccess('Logged in successfully');
         if (context.mounted) {

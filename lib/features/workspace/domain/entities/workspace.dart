@@ -4,6 +4,7 @@ class Workspace {
   final String description;
   final String createdBy;
   final List<String> members;
+  final List<String> pendingMembers;
   final DateTime createdAt;
   final double progress;
 
@@ -14,6 +15,7 @@ class Workspace {
     required this.createdBy,
     required this.members,
     required this.createdAt,
+    this.pendingMembers = const [],
     this.progress = 0.0,
   });
 
@@ -23,6 +25,7 @@ class Workspace {
     String? description,
     String? createdBy,
     List<String>? members,
+    List<String>? pendingMembers,
     DateTime? createdAt,
     double? progress,
   }) {
@@ -32,6 +35,7 @@ class Workspace {
       description: description ?? this.description,
       createdBy: createdBy ?? this.createdBy,
       members: members ?? this.members,
+      pendingMembers: pendingMembers ?? this.pendingMembers,
       createdAt: createdAt ?? this.createdAt,
       progress: progress ?? this.progress,
     );

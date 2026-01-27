@@ -44,6 +44,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       description: workspace.description,
       createdBy: workspace.createdBy,
       members: workspace.members,
+      pendingMembers: workspace.pendingMembers,
       createdAt: workspace.createdAt,
       progress: workspace.progress,
     );
@@ -117,8 +118,12 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       final uid = await authRepo.getUIDByEmail(email);
 
       if (uid == null) {
-        AppSnackbar.showError(
-          'No account found with email "$email". Make sure they have signed up.',
+        // User not found in Firestore, add to pendingMembers
+        await _firestore.collection('workspaces').doc(workspaceId).update({
+          'pendingMembers': FieldValue.arrayUnion([email]),
+        });
+        AppSnackbar.showSuccess(
+          'Invitation sent to "$email". They will join upon signing up.',
         );
         return;
       }
