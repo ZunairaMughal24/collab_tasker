@@ -117,7 +117,9 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       final uid = await authRepo.getUIDByEmail(email);
 
       if (uid == null) {
-        AppSnackbar.showError('No user found with this email.');
+        AppSnackbar.showError(
+          'No account found with email "$email". Make sure they have signed up.',
+        );
         return;
       }
 

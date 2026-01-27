@@ -105,18 +105,24 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<String?> getUIDByEmail(String email) async {
     try {
-      final snapshot = await _firestore
+      final normalizedEmail = email.trim().toLowerCase();
+
+      // First try exact match with lowercase email
+      var snapshot = await _firestore
           .collection('users')
-          .where('email', isEqualTo: email.toLowerCase())
+          .where('email', isEqualTo: normalizedEmail)
           .limit(1)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
         return snapshot.docs.first.id;
       }
+
+      // If no match found, log for debugging
+      debugPrint('User not found for email: $normalizedEmail');
       return null;
     } catch (e) {
-      AppSnackbar.showError('Error looking up user: ${e.toString()}');
+      debugPrint('Error looking up user by email: $e');
       return null;
     }
   }

@@ -85,16 +85,6 @@ class WorkspaceDetailScreen extends StatelessWidget {
             ),
           ),
         ),
-        CircleAvatar(
-          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-          child: Icon(
-            Icons.person_outline_rounded,
-            color: AppColors.primary,
-            size: 20.w,
-          ),
-          radius: 18,
-        ),
-        SizedBox(width: 24.w),
       ],
     );
   }

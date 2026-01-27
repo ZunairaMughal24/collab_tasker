@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
@@ -111,63 +112,77 @@ class _TopSnackbarWidgetState extends State<_TopSnackbarWidget>
         position: _offsetAnimation,
         child: Material(
           color: Colors.transparent,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 22.h),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.98),
-              borderRadius: BorderRadius.circular(24.r),
-              border: Border.all(
-                color: AppColors.white.withValues(alpha: 0.15),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  blurRadius: 40,
-                  offset: const Offset(0, 20),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(10.w),
-                  decoration: BoxDecoration(
-                    color: widget.statusColor.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 22.h),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(24.r),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.2),
+                    width: 1.5,
                   ),
-                  child: Icon(
-                    widget.icon,
-                    color: widget.statusColor,
-                    size: 28.w,
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.isError ? 'Error Occurred' : 'Success!',
-                        style: AppTextStyle.bodySmall.copyWith(
-                          color: widget.statusColor,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        widget.message,
-                        style: AppTextStyle.bodyMedium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.white.withValues(alpha: 0.15),
+                      AppColors.white.withValues(alpha: 0.05),
                     ],
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 30,
+                      offset: const Offset(0, 15),
+                    ),
+                  ],
                 ),
-              ],
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10.w),
+                      decoration: BoxDecoration(
+                        color: widget.statusColor.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.statusColor,
+                        size: 28.w,
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.isError ? 'Error Occurred' : 'Success!',
+                            style: AppTextStyle.bodySmall.copyWith(
+                              color: widget.statusColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            widget.message,
+                            style: AppTextStyle.bodyMedium.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
