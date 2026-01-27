@@ -19,7 +19,6 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     Query query = _firestore
         .collection('workspaces')
         .where('members', arrayContains: userId)
-        .orderBy('createdAt', descending: true)
         .limit(limit);
 
     if (lastDoc != null) {

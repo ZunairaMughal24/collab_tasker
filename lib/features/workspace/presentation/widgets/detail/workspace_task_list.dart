@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/widgets/glass_container.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace_task.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_detail_controller.dart';
@@ -26,7 +25,7 @@ class WorkspaceTaskList extends StatelessWidget {
                 size: 48.w,
                 color: AppColors.textSecondary.withValues(alpha: 0.3),
               ),
-              16.heightBox,
+              SizedBox(height: 16.h),
               Text(
                 'No tasks yet',
                 style: AppTextStyle.bodyMedium.copyWith(
@@ -66,7 +65,7 @@ class WorkspaceTaskList extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          16.widthBox,
+          SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +78,7 @@ class WorkspaceTaskList extends StatelessWidget {
                     color: isCompleted ? AppColors.textSecondary : Colors.white,
                   ),
                 ),
-                4.heightBox,
+                SizedBox(height: 4.h),
                 Text(
                   task.description.isEmpty
                       ? 'No description'

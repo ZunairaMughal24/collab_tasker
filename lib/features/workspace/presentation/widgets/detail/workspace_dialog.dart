@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
@@ -39,7 +38,7 @@ class WorkspaceDialog extends StatelessWidget {
                 style: AppTextStyle.displayMedium.copyWith(fontSize: 24.sp),
               ),
               if (subtitle != null) ...[
-                8.heightBox,
+                SizedBox(height: 8.h),
                 Text(
                   subtitle!,
                   style: AppTextStyle.bodySmall.copyWith(
@@ -47,10 +46,10 @@ class WorkspaceDialog extends StatelessWidget {
                   ),
                 ),
               ],
-              24.heightBox,
+              SizedBox(height: 24.h),
               ...children,
               if (action != null) ...[
-                24.heightBox,
+                SizedBox(height: 24.h),
                 SizedBox(width: double.infinity, child: action!),
               ],
             ],

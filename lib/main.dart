@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:collab_tasker/firebase_options.dart';
 import 'package:collab_tasker/config/app_router.dart';
 import 'package:collab_tasker/core/theme/app_theme.dart';
-import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
-          scaffoldMessengerKey: snackbarKey,
           routerConfig: router,
           title: 'Collab Tasker',
           debugShowCheckedModeBanner: false,

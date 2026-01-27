@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AuthHeader extends StatelessWidget {
@@ -23,7 +22,7 @@ class AuthHeader extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          20.heightBox,
+          SizedBox(height: 20.h),
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
@@ -33,13 +32,13 @@ class AuthHeader extends StatelessWidget {
             ),
             child: Icon(icon, size: 48.w, color: AppColors.primary),
           ),
-          16.heightBox,
+          SizedBox(height: 16.h),
           Text(
             title,
             style: AppTextStyle.displayMedium,
             textAlign: TextAlign.center,
           ),
-          4.heightBox,
+          SizedBox(height: 4.h),
           Text(
             subtitle,
             style: AppTextStyle.bodyMedium.copyWith(

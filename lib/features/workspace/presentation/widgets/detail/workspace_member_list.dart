@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/widgets/glass_container.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_detail_controller.dart';
 
@@ -40,7 +39,7 @@ class WorkspaceMemberList extends StatelessWidget {
                           color: AppColors.primary,
                         ),
                 ),
-                16.widthBox,
+                SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

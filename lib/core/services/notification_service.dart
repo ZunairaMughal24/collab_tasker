@@ -12,7 +12,6 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
-    // 1. Request Permissions
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
@@ -24,7 +23,6 @@ class NotificationService {
         print('User granted permission');
       }
 
-      // 2. Setup Local Notifications (for Foreground)
       const AndroidInitializationSettings androidSettings =
           AndroidInitializationSettings('@mipmap/ic_launcher');
       const DarwinInitializationSettings iosSettings =
@@ -36,13 +34,11 @@ class NotificationService {
 
       await _localNotifications.initialize(initSettings);
 
-      // 3. Get FCM Token
       String? token = await _firebaseMessaging.getToken();
       if (kDebugMode) {
         print('FCM Token: $token');
       }
 
-      // 4. Handle Foreground Messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         if (kDebugMode) {
           print('Got a message whilst in the foreground!');
@@ -53,7 +49,6 @@ class NotificationService {
         }
       });
 
-      // 5. Handle Background Clicks
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         if (kDebugMode) {
           print('A new onMessageOpenedApp event was published!');

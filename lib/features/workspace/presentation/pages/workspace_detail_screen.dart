@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_detail_controller.dart';
@@ -32,13 +31,13 @@ class WorkspaceDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              20.heightBox,
+              SizedBox(height: 20.h),
               _buildHeader(context, controller),
-              20.heightBox,
+              SizedBox(height: 20.h),
               _buildStatsCard(controller),
-              24.heightBox,
+              SizedBox(height: 24.h),
               _buildViewToggle(controller),
-              24.heightBox,
+              SizedBox(height: 24.h),
               _buildActionBar(controller, () {
                 if (controller.selectedView.value == 0) {
                   _showAddTaskDialog(context, controller);
@@ -46,7 +45,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
                   _showAddMemberDialog(context, controller);
                 }
               }),
-              16.heightBox,
+              SizedBox(height: 16.h),
               Expanded(
                 child: Obx(() {
                   if (controller.selectedView.value == 0) {
@@ -95,7 +94,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
           ),
           radius: 18,
         ),
-        24.widthBox,
+        SizedBox(width: 24.w),
       ],
     );
   }
@@ -119,7 +118,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
                 color: AppColors.primary,
               ),
             ),
-            16.widthBox,
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,7 +274,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
             controller: titleController,
             prefixIcon: Icons.task_alt_rounded,
           ),
-          16.heightBox,
+          SizedBox(height: 16.h),
           AppTextField(
             heading: 'Description',
             hintText: 'Add some details...',

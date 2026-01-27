@@ -72,7 +72,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await _firestore.collection('users').doc(uid).set({
         'uid': uid,
-        'email': email,
+        'email': email.toLowerCase(),
         'name': name,
         'fcmToken': fcmToken,
         'lastActive': FieldValue.serverTimestamp(),
@@ -107,7 +107,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final snapshot = await _firestore
           .collection('users')
-          .where('email', isEqualTo: email)
+          .where('email', isEqualTo: email.toLowerCase())
           .limit(1)
           .get();
 

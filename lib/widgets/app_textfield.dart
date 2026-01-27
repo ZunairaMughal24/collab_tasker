@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 
 class AppTextField extends StatelessWidget {
   final String? heading;
@@ -56,8 +55,9 @@ class AppTextField extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          8.heightBox,
+          SizedBox(height: 8.h),
         ],
+
         TextFormField(
           controller: controller,
           validator: validator,

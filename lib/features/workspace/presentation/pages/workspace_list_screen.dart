@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
-import 'package:collab_tasker/core/utils/padding_extension.dart';
-import 'package:collab_tasker/core/utils/widget_extension.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_list_controller.dart';
 import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_card.dart';
@@ -29,51 +27,54 @@ class WorkspaceListScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              20.heightBox,
+              SizedBox(height: 20.h),
 
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => scaffoldKey.currentState?.openDrawer(),
-                    child: Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withValues(alpha: 0.05),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.white.withValues(alpha: 0.1),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => scaffoldKey.currentState?.openDrawer(),
+                      child: Container(
+                        padding: EdgeInsets.all(8.w),
+                        decoration: BoxDecoration(
+                          color: AppColors.white.withValues(alpha: 0.05),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.white.withValues(alpha: 0.1),
+                          ),
                         ),
-                      ),
-                      child: Icon(
-                        Icons.menu_rounded,
-                        color: AppColors.white,
-                        size: 24.w,
+                        child: Icon(
+                          Icons.menu_rounded,
+                          color: AppColors.white,
+                          size: 24.w,
+                        ),
                       ),
                     ),
-                  ),
-                  16.widthBox,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
-                        style: AppTextStyle.displayMedium.copyWith(
-                          fontSize: 22.sp,
+                    SizedBox(width: 16.w),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
+                          style: AppTextStyle.displayMedium.copyWith(
+                            fontSize: 22.sp,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Manage your team tasks effectively',
-                        style: AppTextStyle.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
+                        Text(
+                          'Manage your team tasks effectively',
+                          style: AppTextStyle.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ).px(24.w),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
 
-              24.heightBox,
+              SizedBox(height: 24.h),
 
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 24.w),
@@ -93,7 +94,7 @@ class WorkspaceListScreen extends StatelessWidget {
                       color: AppColors.textSecondary,
                       size: 20.w,
                     ),
-                    12.widthBox,
+                    SizedBox(width: 12.w),
                     Expanded(
                       child: TextField(
                         style: AppTextStyle.bodyMedium,
@@ -112,7 +113,7 @@ class WorkspaceListScreen extends StatelessWidget {
                 ),
               ),
 
-              22.heightBox,
+              SizedBox(height: 22.h),
 
               Expanded(
                 child: Obx(() {
@@ -132,7 +133,7 @@ class WorkspaceListScreen extends StatelessWidget {
                               alpha: 0.5,
                             ),
                           ),
-                          24.heightBox,
+                          SizedBox(height: 24.h),
                           Text(
                             'No Workspaces Found',
                             style: AppTextStyle.displayMedium.copyWith(
@@ -140,14 +141,17 @@ class WorkspaceListScreen extends StatelessWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          8.heightBox,
-                          Text(
-                            'Create a workspace to collaborate with your team and master your goals together.',
-                            textAlign: TextAlign.center,
-                            style: AppTextStyle.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
+                          SizedBox(height: 8.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32.w),
+                            child: Text(
+                              'Create a workspace to collaborate with your team and master your goals together.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyle.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                          ).px(32.w),
+                          ),
                         ],
                       ),
                     );
@@ -170,9 +174,12 @@ class WorkspaceListScreen extends StatelessWidget {
                           ),
                         );
                       } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        ).py24();
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24.h),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
                       }
                     },
                   );
@@ -241,7 +248,7 @@ class WorkspaceListScreen extends StatelessWidget {
               }
             },
           ),
-          30.heightBox,
+          SizedBox(height: 30.h),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:collab_tasker/features/workspace/presentation/pages/workspace_li
 import 'package:collab_tasker/features/workspace/presentation/pages/add_workspace_screen.dart';
 import 'package:collab_tasker/features/workspace/presentation/pages/workspace_detail_screen.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
+import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -17,6 +18,7 @@ class AppRoutes {
 }
 
 final router = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: AppRoutes.splash,
   routes: [
     GoRoute(
