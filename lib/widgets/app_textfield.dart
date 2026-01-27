@@ -11,6 +11,7 @@ class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final FormFieldValidator<String>? validator;
   final bool isPasswordField;
+  final bool isObscure;
   final TextInputType? keyboardType;
   final String? prefixIcon;
   final String? suffixIcon;
@@ -27,6 +28,7 @@ class AppTextField extends StatelessWidget {
     this.controller,
     this.validator,
     this.isPasswordField = false,
+    this.isObscure = false,
     this.keyboardType,
     this.prefixIcon,
     this.suffixIcon,
@@ -55,7 +57,7 @@ class AppTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           validator: validator,
-          obscureText: isPasswordField,
+          obscureText: isObscure,
           keyboardType: keyboardType,
           readOnly: readOnly,
           maxLines: maxLines,
@@ -84,30 +86,7 @@ class AppTextField extends StatelessWidget {
                     ),
                   )
                 : null,
-            suffixIcon: suffixIcon != null
-                ? InkWell(
-                    onTap: onSuffixTap,
-                    child: Padding(
-                      padding: EdgeInsets.all(12.w),
-                      child: SvgPicture.asset(
-                        suffixIcon ?? '',
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.textSecondary,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
-                  )
-                : isPasswordField
-                ? IconButton(
-                    icon: Icon(
-                      Icons.visibility_off,
-                      color: AppColors.textSecondary,
-                      size: 20.w,
-                    ),
-                    onPressed: onSuffixTap,
-                  )
-                : null,
+            suffixIcon: _buildSuffixIcon(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.r),
               borderSide: BorderSide(color: AppColors.glassBorder),
@@ -132,5 +111,34 @@ class AppTextField extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget? _buildSuffixIcon() {
+    if (suffixIcon != null) {
+      return InkWell(
+        onTap: onSuffixTap,
+        child: Padding(
+          padding: EdgeInsets.all(12.w),
+          child: SvgPicture.asset(
+            suffixIcon!,
+            colorFilter: const ColorFilter.mode(
+              AppColors.textSecondary,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      );
+    }
+    if (isPasswordField) {
+      return IconButton(
+        icon: Icon(
+          isObscure ? Icons.visibility_off : Icons.visibility,
+          color: AppColors.textSecondary,
+          size: 20.w,
+        ),
+        onPressed: onSuffixTap,
+      );
+    }
+    return null;
   }
 }

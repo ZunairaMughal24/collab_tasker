@@ -29,22 +29,22 @@ class SignInScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              80.heightBox,
+              60.heightBox,
               const AuthHeader(
                 title: 'Welcome Back',
-                subtitle: 'Collaborate and achieve more together',
+                subtitle: 'Sign in to continue your collaborative journey',
               ),
-              60.heightBox,
+              40.heightBox,
 
               // Form inside Glass Container
               GlassContainer(
-                padding: EdgeInsets.all(28.w),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
                 borderRadius: 24,
                 child: Column(
                   children: [
                     AppTextField(
                       heading: 'Email Address',
-                      hintText: 'name@example.com',
+                      hintText: 'Enter your email',
                       controller: controller.emailController,
                       validator: Validators.emailValidator,
                       keyboardType: TextInputType.emailAddress,
@@ -53,10 +53,11 @@ class SignInScreen extends StatelessWidget {
                     Obx(
                       () => AppTextField(
                         heading: 'Password',
-                        hintText: '••••••••',
+                        hintText: 'Enter your password',
                         controller: controller.passwordController,
                         validator: Validators.passwordValidator,
-                        isPasswordField: !controller.isPasswordVisible.value,
+                        isPasswordField: true,
+                        isObscure: !controller.isPasswordVisible.value,
                         onSuffixTap: controller.togglePasswordVisibility,
                       ),
                     ),
@@ -64,15 +65,16 @@ class SignInScreen extends StatelessWidget {
                     16.heightBox,
                     Align(
                       alignment: Alignment.centerRight,
-                      child: GestureDetector(
+                      child: InkWell(
                         onTap: () {},
+                        borderRadius: BorderRadius.circular(8),
                         child: Text(
                           'Forgot Password?',
                           style: AppTextStyle.bodyMedium.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
+                        ).p4(),
                       ),
                     ),
 
@@ -88,17 +90,21 @@ class SignInScreen extends StatelessWidget {
                 ),
               ),
 
-              40.heightBox,
+              32.heightBox,
 
               // Social Logins
               Row(
                 children: [
-                  const Expanded(child: Divider(color: AppColors.glassBorder)),
+                  const Expanded(
+                    child: Divider(color: AppColors.glassBorder, thickness: 1),
+                  ),
                   Text(
                     'Or continue with',
-                    style: AppTextStyle.labelMedium.copyWith(fontSize: 14.sp),
+                    style: AppTextStyle.labelMedium,
                   ).px16(),
-                  const Expanded(child: Divider(color: AppColors.glassBorder)),
+                  const Expanded(
+                    child: Divider(color: AppColors.glassBorder, thickness: 1),
+                  ),
                 ],
               ),
 
@@ -123,7 +129,7 @@ class SignInScreen extends StatelessWidget {
                 ],
               ),
 
-              40.heightBox,
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -133,7 +139,7 @@ class SignInScreen extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  GestureDetector(
+                  InkWell(
                     onTap: () => context.push(AppRoutes.signUp),
                     child: Text(
                       'Sign Up',
@@ -141,14 +147,14 @@ class SignInScreen extends StatelessWidget {
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).py8(),
                   ),
                 ],
               ),
-              40.heightBox,
+              20.heightBox,
             ],
-          ).px(24.w).scrollVertical(),
-        ),
+          ).px(24.w),
+        ).scrollVertical(),
       ),
     );
   }

@@ -9,7 +9,9 @@ class GlassContainer extends StatelessWidget {
   final double opacity;
   final double borderRadius;
   final EdgeInsetsGeometry? padding;
-  final Border? border;
+  final EdgeInsetsGeometry? margin;
+  final Gradient? borderGradient;
+  final Color? borderColor;
 
   const GlassContainer({
     super.key,
@@ -18,23 +20,48 @@ class GlassContainer extends StatelessWidget {
     this.opacity = 0.1,
     this.borderRadius = 16.0,
     this.padding,
-    this.border,
+    this.margin,
+    this.borderGradient,
+    this.borderColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius.r),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: AppColors.white.withOpacity(opacity),
-            borderRadius: BorderRadius.circular(borderRadius.r),
-            border: border ?? Border.all(color: AppColors.glassBorder),
+    return Container(
+      margin: margin,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius.r),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: Container(
+            padding: padding,
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(opacity),
+              borderRadius: BorderRadius.circular(borderRadius.r),
+              border: borderGradient == null
+                  ? Border.all(
+                      color: borderColor ?? AppColors.glassBorder,
+                      width: 1.0,
+                    )
+                  : null,
+            ),
+            child: borderGradient != null
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius.r),
+                      gradient: borderGradient,
+                    ),
+                    padding: const EdgeInsets.all(1), // Border width
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.glassBase.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(borderRadius.r - 1),
+                      ),
+                      child: child,
+                    ),
+                  )
+                : child,
           ),
-          child: child,
         ),
       ),
     );

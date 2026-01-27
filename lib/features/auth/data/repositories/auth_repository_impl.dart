@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collab_tasker/features/auth/domain/repositories/auth_repository.dart';
-import 'package:collab_tasker/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
+/// Auth repository implementation - directly uses Firebase, no datasource layer.
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource _remoteDataSource;
-
-  AuthRepositoryImpl(this._remoteDataSource);
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   Future<UserCredential?> signInWithEmailAndPassword(
@@ -14,9 +12,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      return await _remoteDataSource.signInWithEmailAndPassword(
-        email,
-        password,
+      return await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
     } on FirebaseAuthException catch (e) {
       _handleAuthError(e);
@@ -33,9 +31,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      return await _remoteDataSource.signUpWithEmailAndPassword(
-        email,
-        password,
+      return await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
     } on FirebaseAuthException catch (e) {
       _handleAuthError(e);
@@ -49,17 +47,17 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signOut() async {
     try {
-      await _remoteDataSource.signOut();
+      await _firebaseAuth.signOut();
     } catch (e) {
       AppSnackbar.showError('Error signing out: ${e.toString()}');
     }
   }
 
   @override
-  User? get currentUser => _remoteDataSource.currentUser;
+  User? get currentUser => _firebaseAuth.currentUser;
 
   @override
-  Stream<User?> get authStateChanges => _remoteDataSource.authStateChanges;
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   void _handleAuthError(FirebaseAuthException e) {
     String message = 'Authentication failed';
@@ -78,6 +76,9 @@ class AuthRepositoryImpl implements AuthRepository {
         break;
       case 'weak-password':
         message = 'The password provided is too weak.';
+        break;
+      case 'invalid-credential':
+        message = 'Invalid email or password.';
         break;
       default:
         message = e.message ?? message;

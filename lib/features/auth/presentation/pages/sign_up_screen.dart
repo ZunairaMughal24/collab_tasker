@@ -30,32 +30,37 @@ class SignUpScreen extends StatelessWidget {
               20.heightBox,
               IconButton(
                 onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
               20.heightBox,
 
               const AuthHeader(
                 title: 'Create Account',
-                subtitle: 'Join the team and start managing tasks',
+                subtitle: 'Join the team and start managing tasks together',
               ),
-              40.heightBox,
+              32.heightBox,
 
               // Form inside Glass Container
               GlassContainer(
-                padding: EdgeInsets.all(28.w),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
                 borderRadius: 24,
                 child: Column(
                   children: [
                     AppTextField(
                       heading: 'Full Name',
-                      hintText: 'John Doe',
+                      hintText: 'Enter your full name',
                       controller: controller.nameController,
                       validator: Validators.nameValidator,
+                      prefixIcon: null, // Can add icons if available
                     ),
                     20.heightBox,
                     AppTextField(
                       heading: 'Email Address',
-                      hintText: 'name@example.com',
+                      hintText: 'Enter your email',
                       controller: controller.emailController,
                       validator: Validators.emailValidator,
                       keyboardType: TextInputType.emailAddress,
@@ -64,22 +69,24 @@ class SignUpScreen extends StatelessWidget {
                     Obx(
                       () => AppTextField(
                         heading: 'Password',
-                        hintText: '••••••••',
+                        hintText: 'Create a password',
                         controller: controller.passwordController,
                         validator: Validators.passwordValidator,
-                        isPasswordField: !controller.isPasswordVisible.value,
+                        isPasswordField: true,
+                        isObscure: !controller.isPasswordVisible.value,
                         onSuffixTap: controller.togglePasswordVisibility,
                       ),
                     ),
                     20.heightBox,
                     AppTextField(
                       heading: 'Confirm Password',
-                      hintText: '••••••••',
+                      hintText: 'Repeat your password',
                       controller: controller.confirmPasswordController,
                       isPasswordField: true,
+                      isObscure: true,
                     ),
 
-                    40.heightBox,
+                    32.heightBox,
                     Obx(
                       () => AppButton(
                         text: 'Create Account',
@@ -91,7 +98,7 @@ class SignUpScreen extends StatelessWidget {
                 ),
               ),
 
-              40.heightBox,
+              32.heightBox,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -101,7 +108,7 @@ class SignUpScreen extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  GestureDetector(
+                  InkWell(
                     onTap: () => context.pop(),
                     child: Text(
                       'Sign In',
@@ -109,14 +116,14 @@ class SignUpScreen extends StatelessWidget {
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).py8(),
                   ),
                 ],
               ),
-              40.heightBox,
+              20.heightBox,
             ],
-          ).px(24.w).scrollVertical(),
-        ),
+          ).px(24.w),
+        ).scrollVertical(),
       ),
     );
   }

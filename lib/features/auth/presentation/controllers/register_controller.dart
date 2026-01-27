@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/core/utils/app_snackbar.dart';
+import 'package:collab_tasker/core/utils/validators.dart';
+import 'package:collab_tasker/config/app_router.dart';
 import 'package:collab_tasker/features/auth/domain/repositories/auth_repository.dart';
 import 'package:collab_tasker/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:collab_tasker/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:collab_tasker/config/app_router.dart';
-import 'package:go_router/go_router.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController();
@@ -13,21 +13,34 @@ class RegisterController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  final AuthRepository _authRepository = AuthRepositoryImpl(
-    AuthRemoteDataSource(),
-  );
+  final AuthRepository _authRepository = AuthRepositoryImpl();
+
   final isLoading = false.obs;
   final isPasswordVisible = false.obs;
+  final errorMessage = ''.obs;
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
   Future<void> register(BuildContext context) async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty) {
-      AppSnackbar.showError('Please fill all fields');
+    // Clear previous error
+    errorMessage.value = '';
+
+    final nameError = Validators.nameValidator(nameController.text);
+    final emailError = Validators.emailValidator(emailController.text);
+    final passwordError = Validators.passwordValidator(passwordController.text);
+
+    if (nameError != null) {
+      AppSnackbar.showError(nameError);
+      return;
+    }
+    if (emailError != null) {
+      AppSnackbar.showError(emailError);
+      return;
+    }
+    if (passwordError != null) {
+      AppSnackbar.showError(passwordError);
       return;
     }
 
@@ -36,21 +49,38 @@ class RegisterController extends GetxController {
       return;
     }
 
-    isLoading.value = true;
-    final user = await _authRepository.signUpWithEmailAndPassword(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-    );
-    isLoading.value = false;
+    try {
+      isLoading.value = true;
 
-    if (user != null) {
-      AppSnackbar.showSuccess('Account created successfully');
-      // Update display name (simplified for now as optional)
-      await user.user?.updateDisplayName(nameController.text.trim());
+      final userCredential = await _authRepository.signUpWithEmailAndPassword(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
 
-      if (context.mounted) {
-        context.go(AppRoutes.workspaceList);
+      if (userCredential != null) {
+        AppSnackbar.showSuccess('Account created successfully');
+        await userCredential.user?.updateDisplayName(
+          nameController.text.trim(),
+        );
+
+        if (context.mounted) {
+          context.go(AppRoutes.workspaceList);
+        }
       }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      AppSnackbar.showError('Registration failed. Please try again.');
+    } finally {
+      isLoading.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
   }
 }

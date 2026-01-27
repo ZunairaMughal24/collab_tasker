@@ -5,6 +5,8 @@ class AppColors {
   static const Color primary = Color(0xFF6366F1); // Indigo
   static const Color secondary = Color(0xFFEC4899); // Pink
   static const Color accent = Color(0xFF8B5CF6); // Violet
+  static const Color neonCyan = Color(0xFF00E5FF);
+  static const Color neonMagenta = Color(0xFFFF2E93);
 
   // Backgrounds
   static const Color background = Color(0xFF0F172A); // Dark Slate
@@ -12,7 +14,17 @@ class AppColors {
 
   // Glassmorphism Base
   static const Color glassBase = Color(0xFF1E293B);
+  static const Color glassBackground = Color(0x1AFFFFFF); // 10% white for glass
   static const Color glassBorder = Color(0x33FFFFFF);
+
+  // Gradients
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+  );
+
+  static const LinearGradient neonGradient = LinearGradient(
+    colors: [Color(0xFF00E5FF), Color(0xFF2979FF)],
+  );
 
   // Text
   static const Color textPrimary = Colors.white;

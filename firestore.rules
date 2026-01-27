@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Workspaces: Users can read/write if they are a member
+    match /workspaces/{workspaceId} {
+      allow read, write: if request.auth != null && request.auth.uid in resource.data.members;
+      allow create: if request.auth != null && request.auth.uid in request.resource.data.members;
+      
+      // Tasks: Users can read/write tasks if they can access the parent workspace
+      match /tasks/{taskId} {
+        // We need to fetch the parent workspace to check membership. 
+        // Note: usage of get() costs 1 read.
+        allow read, write: if request.auth != null && 
+          request.auth.uid in get(/databases/$(database)/documents/workspaces/$(workspaceId)).data.members;
+      }
+    }
+    
+    // Users collection (if exists)
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

@@ -26,6 +26,16 @@ class AppTextStyle {
     fontWeight: FontWeight.normal,
   );
 
+  static TextStyle bodySmall = base.copyWith(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.normal,
+  );
+
+  static TextStyle labelLarge = base.copyWith(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w500,
+  );
+
   static TextStyle labelMedium = base.copyWith(
     fontSize: 12.sp,
     color: AppColors.textSecondary,
