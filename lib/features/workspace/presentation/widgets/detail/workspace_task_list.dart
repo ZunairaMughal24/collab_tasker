@@ -59,7 +59,7 @@ class WorkspaceTaskList extends StatelessWidget {
 
     return GlassContainer(
       margin: EdgeInsets.only(bottom: 16.h),
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(12.w),
       borderRadius: 20,
       child: Row(
         children: [
@@ -98,31 +98,47 @@ class WorkspaceTaskList extends StatelessWidget {
               ],
             ),
           ),
-          if (!isCompleted)
-            IconButton(
-              onPressed: () =>
-                  controller.updateTaskStatus(task, TaskStatus.completed),
-              icon: Icon(
-                Icons.check_circle_outline_rounded,
-                color: AppColors.primary,
-                size: 26.w,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!isCompleted)
+                IconButton(
+                  onPressed: () =>
+                      controller.updateTaskStatus(task, TaskStatus.completed),
+                  icon: Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: AppColors.primary,
+                    size: 24.w,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                )
+              else
+                IconButton(
+                  onPressed: () =>
+                      controller.updateTaskStatus(task, TaskStatus.pending),
+                  icon: Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.greenAccent,
+                    size: 25.w,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                ),
+              IconButton(
+                onPressed: () => _showTaskManagementMenu(context, task),
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: AppColors.textSecondary,
+                  size: 25,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
               ),
-            )
-          else
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Icon(
-                Icons.check_circle_rounded,
-                color: Colors.greenAccent,
-                size: 26.w,
-              ),
-            ),
-          IconButton(
-            onPressed: () => _showTaskManagementMenu(context, task),
-            icon: const Icon(
-              Icons.more_horiz_rounded,
-              color: AppColors.textSecondary,
-            ),
+            ],
           ),
         ],
       ),

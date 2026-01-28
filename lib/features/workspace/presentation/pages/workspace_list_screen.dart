@@ -224,53 +224,148 @@ class WorkspaceListScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(color: Colors.transparent),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              child: Icon(
-                Icons.person_outline_rounded,
-                color: AppColors.primary,
-                size: 40.w,
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20.h,
+              bottom: 30.h,
+              left: 24.w,
+              right: 24.w,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.accent.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              radius: 40.r,
             ),
-            accountName: Text(
-              user?.displayName ?? 'Collab Member',
-              style: AppTextStyle.bodyLarge,
-            ),
-            accountEmail: Text(
-              user?.email ?? 'member@collabtasker.com',
-              style: AppTextStyle.bodySmall,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(3.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary, width: 2),
+                  ),
+                  child: CircleAvatar(
+                    radius: 35.r,
+                    backgroundColor: AppColors.white.withValues(alpha: 0.1),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: AppColors.primary,
+                      size: 40.w,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  user?.displayName ?? 'Collab Member',
+                  style: AppTextStyle.displayMedium.copyWith(fontSize: 20.sp),
+                ),
+                Text(
+                  user?.email ?? 'member@collabtasker.com',
+                  style: AppTextStyle.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.person_outline, color: Colors.white),
-            title: Text('My Profile', style: AppTextStyle.bodyMedium),
+          SizedBox(height: 15.h),
+          _buildDrawerItem(
+            icon: Icons.dashboard_outlined,
+            label: 'My Workspaces',
+            onTap: () => Navigator.pop(context),
+            isSelected: true,
+          ),
+          _buildDrawerItem(
+            icon: Icons.person_outline_rounded,
+            label: 'My Profile',
             onTap: () {},
           ),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined, color: Colors.white),
-            title: Text('Settings', style: AppTextStyle.bodyMedium),
+          _buildDrawerItem(
+            icon: Icons.task_alt_rounded,
+            label: 'Task Analytics',
+            onTap: () {},
+          ),
+          _buildDrawerItem(
+            icon: Icons.settings_outlined,
+            label: 'Settings',
+            onTap: () {},
+          ),
+          const Divider(
+            color: Colors.white10,
+            indent: 24,
+            endIndent: 24,
+            height: 40,
+          ),
+          _buildDrawerItem(
+            icon: Icons.help_outline_rounded,
+            label: 'Help & Support',
+            onTap: () {},
+          ),
+          _buildDrawerItem(
+            icon: Icons.privacy_tip_outlined,
+            label: 'Privacy Policy',
             onTap: () {},
           ),
           const Spacer(),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: AppColors.error),
-            title: Text(
-              'Logout',
-              style: AppTextStyle.bodyMedium.copyWith(color: AppColors.error),
+          Padding(
+            padding: EdgeInsets.all(24.w),
+            child: ListTile(
+              leading: const Icon(Icons.logout_rounded, color: AppColors.error),
+              title: Text(
+                'Logout',
+                style: AppTextStyle.bodyMedium.copyWith(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              tileColor: AppColors.error.withValues(alpha: 0.05),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  context.go(AppRoutes.signIn);
+                }
+              },
             ),
-            onTap: () async {
-              await FirebaseAuth.instance.signOut();
-              if (context.mounted) {
-                context.go(AppRoutes.signIn);
-              }
-            },
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 10.h),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    bool isSelected = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.h),
+      child: ListTile(
+        onTap: onTap,
+        leading: Icon(
+          icon,
+          color: isSelected ? AppColors.primary : Colors.white70,
+        ),
+        title: Text(
+          label,
+          style: AppTextStyle.bodyMedium.copyWith(
+            color: isSelected ? Colors.white : Colors.white70,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        tileColor: isSelected ? AppColors.primary.withValues(alpha: 0.1) : null,
       ),
     );
   }

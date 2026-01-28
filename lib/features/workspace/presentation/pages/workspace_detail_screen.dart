@@ -66,32 +66,52 @@ class WorkspaceDetailScreen extends StatelessWidget {
     BuildContext context,
     WorkspaceDetailController controller,
   ) {
-    return Row(
+    return Column(
       children: [
-        IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(
-            Icons.chevron_left_rounded,
-            color: Colors.white,
-            size: 28,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            'Workspace Overview',
-            style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        if (controller.isCreator)
-          IconButton(
-            onPressed: () => _showEditWorkspaceDialog(context, controller),
-            icon: const Icon(
-              Icons.edit_note_rounded,
-              color: Colors.white,
-              size: 28,
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.chevron_left_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
             ),
-          ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Text(
+                'Workspace Overview',
+                style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (controller.isCreator)
+              IconButton(
+                onPressed: () => _showEditWorkspaceDialog(context, controller),
+                icon: const Icon(
+                  Icons.edit_note_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+          ],
+        ),
+        SizedBox(height: 6.h),
+        const Divider(color: Colors.white10),
       ],
     );
   }

@@ -108,8 +108,10 @@ class AppTextField extends StatelessWidget {
 
   Widget? _buildPrefixIcon() {
     final path = prefixIconPath;
+    Widget? iconWidget;
+
     if (path != null) {
-      return Padding(
+      iconWidget = Padding(
         padding: EdgeInsets.all(12.w),
         child: SvgPicture.asset(
           path,
@@ -119,12 +121,20 @@ class AppTextField extends StatelessWidget {
           ),
         ),
       );
+    } else if (prefixIcon != null) {
+      iconWidget = Icon(prefixIcon, color: AppColors.textSecondary, size: 20.w);
     }
-    final icon = prefixIcon;
-    if (icon != null) {
-      return Icon(icon, color: AppColors.textSecondary, size: 20.w);
+
+    if (iconWidget != null && maxLines > 1) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(height: 12.h), // Align with hint text
+          iconWidget,
+        ],
+      );
     }
-    return null;
+    return iconWidget;
   }
 
   Widget? _buildSuffixIcon() {
