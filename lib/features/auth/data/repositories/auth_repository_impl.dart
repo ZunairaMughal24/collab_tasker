@@ -77,21 +77,6 @@ class AuthRepositoryImpl implements AuthRepository {
         'fcmToken': fcmToken,
         'lastActive': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-
-      // Process pending invites
-      final pendingWorkspaces = await _firestore
-          .collection('workspaces')
-          .where('pendingMembers', arrayContains: email.toLowerCase())
-          .get();
-
-      final batch = _firestore.batch();
-      for (final doc in pendingWorkspaces.docs) {
-        batch.update(doc.reference, {
-          'members': FieldValue.arrayUnion([uid]),
-          'pendingMembers': FieldValue.arrayRemove([email.toLowerCase()]),
-        });
-      }
-      await batch.commit();
     } catch (e) {
       AppSnackbar.showError('Error saving user data: ${e.toString()}');
     }
@@ -133,7 +118,6 @@ class AuthRepositoryImpl implements AuthRepository {
         return snapshot.docs.first.id;
       }
 
-      // If no match found, log for debugging
       debugPrint('User not found for email: $normalizedEmail');
       return null;
     } catch (e) {

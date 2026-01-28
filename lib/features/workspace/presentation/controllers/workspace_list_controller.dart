@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:collab_tasker/features/workspace/domain/repositories/workspace_repository.dart';
 import 'package:collab_tasker/features/workspace/data/repositories/workspace_repository_impl.dart';
+import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 class WorkspaceListController extends GetxController {
   final WorkspaceRepository _repository = WorkspaceRepositoryImpl();
@@ -22,7 +23,13 @@ class WorkspaceListController extends GetxController {
   void onInit() {
     super.onInit();
     scrollController = ScrollController()..addListener(_scrollListener);
-    fetchWorkspaces();
+    _listenToWorkspaces();
+  }
+
+  void _listenToWorkspaces() {
+    final user = currentUser;
+    if (user == null) return;
+    workspaces.bindStream(_repository.watchWorkspaces(user.uid));
   }
 
   void _scrollListener() {
@@ -62,6 +69,26 @@ class WorkspaceListController extends GetxController {
     }
   }
 
+  Future<void> deleteWorkspace(String workspaceId) async {
+    try {
+      await _repository.deleteWorkspace(workspaceId);
+      refreshWorkspaces();
+      AppSnackbar.showSuccess('Workspace deleted successfully');
+    } catch (e) {
+      AppSnackbar.showError('Failed to delete workspace');
+    }
+  }
+
+  Future<void> updateWorkspace(Workspace workspace) async {
+    try {
+      await _repository.updateWorkspace(workspace);
+      refreshWorkspaces();
+      AppSnackbar.showSuccess('Workspace updated successfully');
+    } catch (e) {
+      AppSnackbar.showError('Failed to update workspace: ${e.toString()}');
+    }
+  }
+
   Future<void> fetchMoreWorkspaces() async {
     final user = currentUser;
     if (user == null) return;
@@ -94,7 +121,16 @@ class WorkspaceListController extends GetxController {
   void refreshWorkspaces() {
     lastDoc = null;
     hasMore.value = true;
-    fetchWorkspaces();
+    _listenToWorkspaces();
+  }
+
+  Future<void> cancelInvite(String workspaceId, String email) async {
+    try {
+      await _repository.cancelInvite(workspaceId, email);
+      AppSnackbar.showSuccess('Invitation cancelled');
+    } catch (e) {
+      AppSnackbar.showError('Failed to cancel invitation');
+    }
   }
 
   @override

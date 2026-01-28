@@ -113,7 +113,14 @@ class WorkspaceMemberList extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => _showMemberManagementMenu(
+                    context,
+                    memberId: memberUid,
+                    email: pendingEmail,
+                    name: isPending
+                        ? pendingEmail!
+                        : (profile?['name'] ?? 'this member'),
+                  ),
                   icon: const Icon(
                     Icons.more_horiz_rounded,
                     color: AppColors.textSecondary,
@@ -125,5 +132,151 @@ class WorkspaceMemberList extends StatelessWidget {
         },
       );
     });
+  }
+
+  void _showMemberManagementMenu(
+    BuildContext context, {
+    String? memberId,
+    String? email,
+    required String name,
+  }) {
+    final currentUser = controller.currentUser;
+    final isCreator = controller.workspace.value.createdBy == currentUser?.uid;
+    final isPending = email != null;
+
+    if (!isCreator) return;
+    if (memberId == currentUser?.uid) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: EdgeInsets.all(24.w),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            SizedBox(height: 24.h),
+            if (isPending)
+              _buildMenuOption(
+                icon: Icons.cancel_outlined,
+                title: 'Cancel Invitation',
+                isDanger: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmCancelInvite(context, email);
+                },
+              )
+            else
+              _buildMenuOption(
+                icon: Icons.person_remove_outlined,
+                title: 'Remove Member',
+                isDanger: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmRemoveMember(context, memberId!, name);
+                },
+              ),
+            SizedBox(height: 20.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmCancelInvite(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Cancel Invitation', style: AppTextStyle.displayMedium),
+        content: Text(
+          'Are you sure you want to cancel the invitation for $email?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.cancelInvite(email);
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'Yes, Cancel',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuOption({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDanger = false,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      leading: Icon(icon, color: isDanger ? AppColors.error : Colors.white),
+      title: Text(
+        title,
+        style: AppTextStyle.bodyLarge.copyWith(
+          color: isDanger ? AppColors.error : Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      tileColor: Colors.white.withValues(alpha: 0.05),
+    );
+  }
+
+  void _confirmRemoveMember(
+    BuildContext context,
+    String memberId,
+    String name,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Remove Member', style: AppTextStyle.displayMedium),
+        content: Text(
+          'Are you sure you want to remove $name from this workspace?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.removeMember(memberId);
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'Remove',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

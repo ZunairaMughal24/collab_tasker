@@ -5,10 +5,12 @@ import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_list_controller.dart';
 import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_card.dart';
+import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/config/app_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 class WorkspaceListScreen extends StatelessWidget {
   const WorkspaceListScreen({super.key});
@@ -52,23 +54,37 @@ class WorkspaceListScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 16.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
-                          style: AppTextStyle.displayMedium.copyWith(
-                            fontSize: 22.sp,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
+                            style: AppTextStyle.displayMedium.copyWith(
+                              fontSize: 22.sp,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        Text(
-                          'Manage your team tasks effectively',
-                          style: AppTextStyle.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
+                          Text(
+                            'Manage your team tasks effectively',
+                            style: AppTextStyle.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13.sp,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        AppSnackbar.showSuccess('Notifications coming soon');
+                      },
+                      icon: Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 28.w,
+                      ),
                     ),
                   ],
                 ),
@@ -172,6 +188,11 @@ class WorkspaceListScreen extends StatelessWidget {
                             AppRoutes.workspaceDetail,
                             extra: workspace,
                           ),
+                          onLongPress: () => _showWorkspaceManagementMenu(
+                            context,
+                            controller,
+                            workspace,
+                          ),
                         );
                       } else {
                         return Padding(
@@ -249,6 +270,116 @@ class WorkspaceListScreen extends StatelessWidget {
             },
           ),
           SizedBox(height: 30.h),
+        ],
+      ),
+    );
+  }
+
+  void _showWorkspaceManagementMenu(
+    BuildContext context,
+    WorkspaceListController controller,
+    Workspace workspace,
+  ) {
+    final user = FirebaseAuth.instance.currentUser;
+    final isCreator = workspace.createdBy == user?.uid;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: EdgeInsets.all(24.w),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            SizedBox(height: 24.h),
+            if (isCreator) ...[
+              SizedBox(height: 12.h),
+              _buildMenuOption(
+                icon: Icons.delete_outline_rounded,
+                title: 'Delete Workspace',
+                isDanger: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context, controller, workspace);
+                },
+              ),
+            ],
+            SizedBox(height: 20.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuOption({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDanger = false,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      leading: Icon(icon, color: isDanger ? AppColors.error : Colors.white),
+      title: Text(
+        title,
+        style: AppTextStyle.bodyLarge.copyWith(
+          color: isDanger ? AppColors.error : Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      tileColor: Colors.white.withValues(alpha: 0.05),
+    );
+  }
+
+  void _showDeleteConfirmation(
+    BuildContext context,
+    WorkspaceListController controller,
+    Workspace workspace,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Delete Workspace', style: AppTextStyle.displayMedium),
+        content: Text(
+          'Are you sure you want to delete "${workspace.name}"? This action cannot be undone and all tasks will be removed.',
+          style: AppTextStyle.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: AppTextStyle.bodyMedium.copyWith(color: Colors.white),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.deleteWorkspace(workspace.id);
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Delete',
+              style: AppTextStyle.bodyMedium.copyWith(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
     );

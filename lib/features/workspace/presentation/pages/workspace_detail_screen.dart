@@ -77,14 +77,21 @@ class WorkspaceDetailScreen extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Obx(
-            () => Text(
-              controller.workspace.value.name,
-              style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
-              overflow: TextOverflow.ellipsis,
-            ),
+          child: Text(
+            'Workspace Overview',
+            style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
+        if (controller.isCreator)
+          IconButton(
+            onPressed: () => _showEditWorkspaceDialog(context, controller),
+            icon: const Icon(
+              Icons.edit_note_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
       ],
     );
   }
@@ -93,41 +100,64 @@ class WorkspaceDetailScreen extends StatelessWidget {
     return Obx(
       () => GlassContainer(
         margin: EdgeInsets.symmetric(horizontal: 24.w),
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(20.w),
         borderRadius: 24,
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.all(12.w),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.insights_rounded,
-                color: AppColors.primary,
-              ),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Workspace Overview',
-                    style: AppTextStyle.bodyLarge.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
                   ),
-                  Text(
-                    '${controller.workspace.value.members.length} members • ${controller.tasks.length} tasks',
-                    style: AppTextStyle.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  child: const Icon(
+                    Icons.work_outline_rounded,
+                    color: AppColors.primary,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        controller.workspace.value.name,
+                        style: AppTextStyle.displayMedium.copyWith(
+                          fontSize: 18.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '${controller.workspace.value.members.length} members • ${controller.tasks.length} tasks',
+                        style: AppTextStyle.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
+            if (controller.workspace.value.description.isNotEmpty) ...[
+              SizedBox(height: 16.h),
+              Text(
+                'Description',
+                style: AppTextStyle.bodySmall.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                controller.workspace.value.description,
+                style: AppTextStyle.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -305,6 +335,56 @@ class WorkspaceDetailScreen extends StatelessWidget {
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
             prefixIcon: Icons.mail_outline_rounded,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditWorkspaceDialog(
+    BuildContext context,
+    WorkspaceDetailController controller,
+  ) {
+    final nameController = TextEditingController(
+      text: controller.workspace.value.name,
+    );
+    final descController = TextEditingController(
+      text: controller.workspace.value.description,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => WorkspaceDialog(
+        title: 'Edit Workspace',
+        subtitle: 'Update your workspace details',
+        action: Obx(
+          () => AppButton(
+            text: 'Save Changes',
+            isLoading: controller.isLoadingInfo.value,
+            onPressed: () async {
+              await controller.updateWorkspaceInfo(
+                nameController.text,
+                descController.text,
+              );
+              if (context.mounted) Navigator.pop(context);
+            },
+          ),
+        ),
+        children: [
+          AppTextField(
+            heading: 'Workspace Name',
+            hintText: 'Enter name',
+            controller: nameController,
+            prefixIcon: Icons.work_outline_rounded,
+          ),
+          SizedBox(height: 16.h),
+          AppTextField(
+            heading: 'Description',
+            hintText: 'Enter description',
+            controller: descController,
+            maxLines: 3,
+            prefixIcon: Icons.description_outlined,
           ),
         ],
       ),

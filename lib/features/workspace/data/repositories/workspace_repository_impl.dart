@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:collab_tasker/features/workspace/data/models/workspace_model.dart';
 import 'package:collab_tasker/features/workspace/data/models/workspace_task_model.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
@@ -37,6 +38,28 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   @override
+  Stream<List<Workspace>> watchWorkspaces(String userId) {
+    return _firestore
+        .collection('workspaces')
+        .where('members', arrayContains: userId)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => WorkspaceModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  @override
+  Stream<Workspace> watchWorkspace(String workspaceId) {
+    return _firestore
+        .collection('workspaces')
+        .doc(workspaceId)
+        .snapshots()
+        .map((doc) => WorkspaceModel.fromFirestore(doc));
+  }
+
+  @override
   Future<String> createWorkspace(Workspace workspace) async {
     final model = WorkspaceModel(
       id: workspace.id,
@@ -45,8 +68,12 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       createdBy: workspace.createdBy,
       members: workspace.members,
       pendingMembers: workspace.pendingMembers,
+      pendingInvites: workspace.pendingInvites,
       createdAt: workspace.createdAt,
+      lastActivityAt: workspace.createdAt,
       progress: workspace.progress,
+      totalTasks: workspace.totalTasks,
+      completedTasks: workspace.completedTasks,
     );
     final docRef = await _firestore
         .collection('workspaces')
@@ -87,6 +114,13 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
         .doc(workspaceId)
         .collection('tasks')
         .add(model.toFirestore());
+
+    await _firestore.collection('workspaces').doc(workspaceId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
+
+    await _updateWorkspaceStats(workspaceId);
+
     return docRef.id;
   }
 
@@ -109,6 +143,37 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
         .collection('tasks')
         .doc(task.id)
         .update(model.toFirestore());
+
+    await _firestore.collection('workspaces').doc(workspaceId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
+
+    await _updateWorkspaceStats(workspaceId);
+  }
+
+  Future<void> _updateWorkspaceStats(String workspaceId) async {
+    try {
+      final tasksSnapshot = await _firestore
+          .collection('workspaces')
+          .doc(workspaceId)
+          .collection('tasks')
+          .get();
+
+      final totalTasks = tasksSnapshot.docs.length;
+      final completedTasks = tasksSnapshot.docs
+          .where((doc) => doc.data()['status'] == 'completed')
+          .length;
+
+      final progress = totalTasks > 0 ? completedTasks / totalTasks : 0.0;
+
+      await _firestore.collection('workspaces').doc(workspaceId).update({
+        'totalTasks': totalTasks,
+        'completedTasks': completedTasks,
+        'progress': progress,
+      });
+    } catch (e) {
+      debugPrint('Error updating workspace stats: $e');
+    }
   }
 
   @override
@@ -118,7 +183,6 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       final uid = await authRepo.getUIDByEmail(email);
 
       if (uid == null) {
-        // User not found in Firestore, add to pendingMembers
         await _firestore.collection('workspaces').doc(workspaceId).update({
           'pendingMembers': FieldValue.arrayUnion([email]),
         });
@@ -129,10 +193,52 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       }
 
       await _firestore.collection('workspaces').doc(workspaceId).update({
-        'members': FieldValue.arrayUnion([uid]),
+        'pendingInvites': FieldValue.arrayUnion([uid]),
       });
+      AppSnackbar.showSuccess('Invitation sent to the user.');
     } catch (e) {
       AppSnackbar.showError('Failed to add member: ${e.toString()}');
     }
+  }
+
+  @override
+  Future<void> cancelInvite(String workspaceId, String email) async {
+    await _firestore.collection('workspaces').doc(workspaceId).update({
+      'pendingMembers': FieldValue.arrayRemove([email]),
+    });
+  }
+
+  @override
+  Future<void> deleteWorkspace(String workspaceId) async {
+    await _firestore.collection('workspaces').doc(workspaceId).delete();
+  }
+
+  @override
+  Future<void> updateWorkspace(Workspace workspace) async {
+    await _firestore.collection('workspaces').doc(workspace.id).update({
+      'name': workspace.name,
+      'description': workspace.description,
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  @override
+  Future<void> removeMember(String workspaceId, String userId) async {
+    await _firestore.collection('workspaces').doc(workspaceId).update({
+      'members': FieldValue.arrayRemove([userId]),
+      'pendingInvites': FieldValue.arrayRemove([userId]),
+    });
+  }
+
+  @override
+  Future<void> deleteTask(String workspaceId, String taskId) async {
+    await _firestore
+        .collection('workspaces')
+        .doc(workspaceId)
+        .collection('tasks')
+        .doc(taskId)
+        .delete();
+
+    await _updateWorkspaceStats(workspaceId);
   }
 }

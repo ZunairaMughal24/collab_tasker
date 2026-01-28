@@ -21,22 +21,20 @@ class SignUpScreen extends StatelessWidget {
     final controller = Get.put(RegisterController());
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: AuthBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 40.h),
-
                 const AuthHeader(
                   title: 'Create Account',
                   subtitle: 'Join the team and start managing tasks together',
                 ),
-
                 SizedBox(height: 20.h),
-
                 GlassContainer(
                   padding: EdgeInsets.symmetric(
                     horizontal: 16.w,
@@ -52,9 +50,7 @@ class SignUpScreen extends StatelessWidget {
                         validator: Validators.nameValidator,
                         prefixIcon: Icons.person_outline_rounded,
                       ),
-
                       SizedBox(height: 14.h),
-
                       AppTextField(
                         heading: 'Email Address',
                         hintText: 'Enter your email',
@@ -63,9 +59,7 @@ class SignUpScreen extends StatelessWidget {
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.mail_outline_rounded,
                       ),
-
                       SizedBox(height: 14.h),
-
                       Obx(
                         () => AppTextField(
                           heading: 'Password',
@@ -78,9 +72,7 @@ class SignUpScreen extends StatelessWidget {
                           prefixIcon: Icons.lock_outline_rounded,
                         ),
                       ),
-
                       SizedBox(height: 14.h),
-
                       AppTextField(
                         heading: 'Confirm Password',
                         hintText: 'Re-enter your password',
@@ -89,9 +81,7 @@ class SignUpScreen extends StatelessWidget {
                         isObscure: true,
                         prefixIcon: Icons.lock_outline_rounded,
                       ),
-
                       SizedBox(height: 30.h),
-
                       Obx(
                         () => AppButton(
                           text: 'Create Account',
@@ -102,9 +92,8 @@ class SignUpScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
+                const Spacer(),
                 SizedBox(height: 12.h),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -132,8 +121,7 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                SizedBox(height: 20.h),
+                SizedBox(height: 30.h),
               ],
             ),
           ),

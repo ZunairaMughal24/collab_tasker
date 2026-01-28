@@ -21,22 +21,20 @@ class SignInScreen extends StatelessWidget {
     final controller = Get.put(LoginController());
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: AuthBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 60.h),
-
                 const AuthHeader(
                   title: 'Welcome Back',
                   subtitle: 'Sign in to continue your collaborative journey',
                 ),
-
                 SizedBox(height: 32.h),
-
                 GlassContainer(
                   padding: EdgeInsets.symmetric(
                     horizontal: 16.w,
@@ -53,9 +51,7 @@ class SignInScreen extends StatelessWidget {
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.mail_outline_rounded,
                       ),
-
                       SizedBox(height: 20.h),
-
                       Obx(
                         () => AppTextField(
                           heading: 'Password',
@@ -68,9 +64,7 @@ class SignInScreen extends StatelessWidget {
                           prefixIcon: Icons.lock_outline_rounded,
                         ),
                       ),
-
                       SizedBox(height: 16.h),
-
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -84,9 +78,7 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       SizedBox(height: 24.h),
-
                       Obx(
                         () => AppButton(
                           text: 'Sign In',
@@ -97,9 +89,7 @@ class SignInScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                SizedBox(height: 14.h),
-
+                const Spacer(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -121,8 +111,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                SizedBox(height: 20.h),
+                SizedBox(height: 30.h),
               ],
             ),
           ),
