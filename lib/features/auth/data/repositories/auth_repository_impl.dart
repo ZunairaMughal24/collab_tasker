@@ -107,7 +107,6 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final normalizedEmail = email.trim().toLowerCase();
 
-      // First try exact match with lowercase email
       var snapshot = await _firestore
           .collection('users')
           .where('email', isEqualTo: normalizedEmail)
