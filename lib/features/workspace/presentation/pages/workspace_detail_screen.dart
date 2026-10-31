@@ -12,6 +12,7 @@ import 'package:collab_tasker/features/workspace/presentation/widgets/detail/wor
 import 'package:collab_tasker/widgets/app_button.dart';
 import 'package:collab_tasker/widgets/app_textfield.dart';
 import 'package:collab_tasker/widgets/glass_container.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_top_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class WorkspaceDetailScreen extends StatelessWidget {
@@ -26,13 +27,20 @@ class WorkspaceDetailScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      appBar: WorkspaceTopBar(
+        title: 'Overview',
+        leadingIcon: Icons.arrow_back_rounded,
+        leadingTooltip: 'Back to workspaces',
+        onLeadingPressed: () => context.pop(),
+        actionIcon: controller.isCreator ? Icons.edit : null,
+        actionTooltip: 'Edit workspace',
+        onActionPressed: () => _showEditWorkspaceDialog(context, controller),
+      ),
       body: AuthBackground(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20.h),
-              _buildHeader(context, controller),
               SizedBox(height: 20.h),
               _buildStatsCard(controller),
               SizedBox(height: 20.h),
@@ -59,58 +67,6 @@ class WorkspaceDetailScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(
-    BuildContext context,
-    WorkspaceDetailController controller,
-  ) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () => context.pop(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: AppColors.glassBase,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.glassBorder),
-                  ),
-                  child: const Icon(
-                    Icons.chevron_left_rounded,
-                    color: AppColors.textPrimary,
-                    size: 28,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Text(
-                'Workspace Overview',
-                style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (controller.isCreator)
-              IconButton(
-                onPressed: () => _showEditWorkspaceDialog(context, controller),
-                icon: const Icon(
-                  Icons.edit_note_rounded,
-                  color: AppColors.textPrimary,
-                  size: 28,
-                ),
-              ),
-          ],
-        ),
-        SizedBox(height: 6.h),
-        const Divider(color: AppColors.glassBorder),
-      ],
     );
   }
 

@@ -50,7 +50,7 @@ class WorkspaceListScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.glassBase,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.glassBorder),
+                  border: Border.all(color: AppColors.textFieldBorder),
                 ),
                 child: Row(
                   children: [
@@ -333,8 +333,16 @@ class WorkspaceListScreen extends StatelessWidget {
       builder: (context) => Container(
         padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: AppColors.glassBase,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          border: Border.all(color: AppColors.glassBorder),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.surfaceShadow,
+              blurRadius: 20,
+              offset: Offset(0, -4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -386,8 +394,11 @@ class WorkspaceListScreen extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      tileColor: AppColors.glassBase,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.glassBorder),
+      ),
+      tileColor: AppColors.background,
     );
   }
 
@@ -399,8 +410,11 @@ class WorkspaceListScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: AppColors.glassBase,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.glassBorder),
+        ),
         title: Text('Delete Workspace', style: AppTextStyle.displayMedium),
         content: Text(
           'Are you sure you want to delete "${workspace.name}"? This action cannot be undone and all tasks will be removed.',

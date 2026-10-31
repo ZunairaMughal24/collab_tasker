@@ -27,8 +27,9 @@ class AppButton extends StatelessWidget {
           color: AppColors.primary,
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.16),
-              blurRadius: 12,
+              color: AppColors.primary.withValues(alpha: 0.12),
+              blurRadius: 10,
+              spreadRadius: -2,
               offset: const Offset(0, 4),
             ),
           ],

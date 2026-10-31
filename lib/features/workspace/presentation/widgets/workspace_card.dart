@@ -54,10 +54,10 @@ class WorkspaceCard extends StatelessWidget {
                       ),
                       margin: EdgeInsets.only(right: 8.w),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.2),
+                        color: AppColors.primary.withValues(alpha: 0.09),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.5),
+                          color: AppColors.primary.withValues(alpha: 0.16),
                         ),
                       ),
                       child: Text(
@@ -80,10 +80,10 @@ class WorkspaceCard extends StatelessWidget {
                       ),
                       margin: EdgeInsets.only(right: 8.w),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.2),
+                        color: AppColors.accent.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.accent.withValues(alpha: 0.5),
+                          color: AppColors.accent.withValues(alpha: 0.16),
                         ),
                       ),
                       child: Text(
