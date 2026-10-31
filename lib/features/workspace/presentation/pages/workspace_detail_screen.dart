@@ -35,9 +35,9 @@ class WorkspaceDetailScreen extends StatelessWidget {
               _buildHeader(context, controller),
               SizedBox(height: 20.h),
               _buildStatsCard(controller),
-              SizedBox(height: 24.h),
+              SizedBox(height: 20.h),
               _buildViewToggle(controller),
-              SizedBox(height: 24.h),
+              SizedBox(height: 20.h),
               _buildActionBar(controller, () {
                 if (controller.selectedView.value == 0) {
                   _showAddTaskDialog(context, controller);
@@ -144,10 +144,11 @@ class WorkspaceDetailScreen extends StatelessWidget {
                       Text(
                         controller.workspace.value.name,
                         style: AppTextStyle.displayMedium.copyWith(
-                          fontSize: 18.sp,
+                          fontSize: 19.sp,
                           color: AppColors.textPrimary,
                         ),
                       ),
+                      SizedBox(height: 3.h),
                       Text(
                         '${controller.workspace.value.members.length} members • ${controller.tasks.length} tasks',
                         style: AppTextStyle.bodySmall.copyWith(
@@ -168,7 +169,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 7.h),
               Text(
                 controller.workspace.value.description,
                 style: AppTextStyle.bodyMedium.copyWith(
@@ -248,7 +249,7 @@ class WorkspaceDetailScreen extends StatelessWidget {
               controller.selectedView.value == 0
                   ? 'Recent Tasks'
                   : 'Team Members',
-              style: AppTextStyle.displayMedium.copyWith(fontSize: 18.sp),
+              style: AppTextStyle.displayMedium.copyWith(fontSize: 19.sp),
             ),
             TextButton.icon(
               onPressed: onAdd,

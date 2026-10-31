@@ -26,33 +26,35 @@ class WorkspaceDialog extends StatelessWidget {
       child: Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-        child: GlassContainer(
-          padding: EdgeInsets.all(28.w),
-          borderRadius: 32,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppTextStyle.displayMedium.copyWith(fontSize: 24.sp),
-              ),
-              if (subtitle != null) ...[
-                SizedBox(height: 8.h),
+        child: SingleChildScrollView(
+          child: GlassContainer(
+            padding: EdgeInsets.all(24.w),
+            borderRadius: 24,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  subtitle!,
-                  style: AppTextStyle.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+                  title,
+                  style: AppTextStyle.displayMedium.copyWith(fontSize: 22.sp),
                 ),
+                if (subtitle != null) ...[
+                  SizedBox(height: 6.h),
+                  Text(
+                    subtitle!,
+                    style: AppTextStyle.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+                SizedBox(height: 22.h),
+                ...children,
+                if (action != null) ...[
+                  SizedBox(height: 24.h),
+                  SizedBox(width: double.infinity, child: action!),
+                ],
               ],
-              SizedBox(height: 24.h),
-              ...children,
-              if (action != null) ...[
-                SizedBox(height: 24.h),
-                SizedBox(width: double.infinity, child: action!),
-              ],
-            ],
+            ),
           ),
         ),
       ),

@@ -55,7 +55,7 @@ class AppTextField extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 9.h),
         ],
 
         TextFormField(
@@ -66,27 +66,28 @@ class AppTextField extends StatelessWidget {
           readOnly: readOnly,
           maxLines: maxLines,
           onChanged: onChanged,
-          style: AppTextStyle.bodyMedium,
+          style: AppTextStyle.bodyMedium.copyWith(fontSize: 15.sp),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: AppTextStyle.bodyMedium.copyWith(
               color: AppColors.hintText,
+              fontSize: 15.sp,
             ),
-            fillColor: fillColor,
-            filled: fillColor != null,
+            fillColor: fillColor ?? AppColors.textFieldFill,
+            filled: true,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
-              vertical: 18.h,
+              vertical: 16.h,
             ),
             prefixIcon: _buildPrefixIcon(),
             suffixIcon: _buildSuffixIcon(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.r),
-              borderSide: BorderSide(color: AppColors.glassBorder),
+              borderSide: const BorderSide(color: AppColors.textFieldBorder),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.r),
-              borderSide: BorderSide(color: AppColors.glassBorder),
+              borderSide: const BorderSide(color: AppColors.textFieldBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.r),

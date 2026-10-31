@@ -92,7 +92,7 @@ class WorkspaceMemberList extends StatelessWidget {
                                 'PENDING',
                                 style: AppTextStyle.bodySmall.copyWith(
                                   color: AppColors.accent,
-                                  fontSize: 8.sp,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

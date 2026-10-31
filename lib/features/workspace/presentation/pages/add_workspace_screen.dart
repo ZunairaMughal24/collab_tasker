@@ -53,14 +53,14 @@ class AddWorkspaceScreen extends StatelessWidget {
                             Text(
                               'Create Workspace',
                               style: AppTextStyle.displayMedium.copyWith(
-                                fontSize: 24.sp,
+                                fontSize: 23.sp,
                               ),
                             ),
                             Text(
                               'Bring your team together',
                               style: AppTextStyle.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
-                                fontSize: 13.sp,
+                                fontSize: 14.sp,
                               ),
                             ),
                           ],
@@ -70,13 +70,13 @@ class AddWorkspaceScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 25.h),
+                SizedBox(height: 24.h),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: GlassContainer(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 16.h,
+                      horizontal: 20.w,
+                      vertical: 22.h,
                     ),
                     borderRadius: 16,
                     child: Column(
@@ -97,9 +97,9 @@ class AddWorkspaceScreen extends StatelessWidget {
                           prefixIcon: Icons.description_outlined,
                         ),
 
-                        SizedBox(height: 14.h),
+                        SizedBox(height: 20.h),
                         const Divider(color: AppColors.glassBorder),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: 18.h),
 
                         _buildSectionHeader(
                           'Add First Task (Optional)',
@@ -132,7 +132,7 @@ class AddWorkspaceScreen extends StatelessWidget {
                           prefixIcon: Icons.mail_outline_rounded,
                         ),
 
-                        SizedBox(height: 40.h),
+                        SizedBox(height: 30.h),
                         Obx(
                           () => AppButton(
                             text: 'Create Workspace',
@@ -159,11 +159,14 @@ class AddWorkspaceScreen extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.primary, size: 20),
         SizedBox(width: 8.w),
-        Text(
-          title,
-          style: AppTextStyle.bodyLarge.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
+        Expanded(
+          child: Text(
+            title,
+            style: AppTextStyle.bodyLarge.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 15.sp,
+            ),
           ),
         ),
       ],

@@ -58,8 +58,8 @@ class WorkspaceTaskList extends StatelessWidget {
     final isCompleted = task.status == TaskStatus.completed;
 
     return GlassContainer(
-      margin: EdgeInsets.only(bottom: 16.h),
-      padding: EdgeInsets.all(12.w),
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(16.w),
       borderRadius: 20,
       child: Row(
         children: [
@@ -71,7 +71,7 @@ class WorkspaceTaskList extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          SizedBox(width: 16.w),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,20 +79,21 @@ class WorkspaceTaskList extends StatelessWidget {
                 Text(
                   task.title,
                   style: AppTextStyle.bodyLarge.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     decoration: isCompleted ? TextDecoration.lineThrough : null,
                     color: isCompleted
                         ? AppColors.textSecondary
                         : AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 5.h),
                 Text(
                   task.description.isEmpty
                       ? 'No description'
                       : task.description,
                   style: AppTextStyle.bodySmall.copyWith(
                     color: AppColors.textSecondary,
+                    fontSize: 13.sp,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

@@ -59,7 +59,7 @@ class WorkspaceListScreen extends StatelessWidget {
                           Text(
                             'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
                             style: AppTextStyle.displayMedium.copyWith(
-                              fontSize: 22.sp,
+                              fontSize: 24.sp,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -67,7 +67,7 @@ class WorkspaceListScreen extends StatelessWidget {
                             'Manage your team tasks effectively',
                             style: AppTextStyle.bodySmall.copyWith(
                               color: AppColors.textSecondary,
-                              fontSize: 13.sp,
+                              fontSize: 14.sp,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -88,7 +88,7 @@ class WorkspaceListScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24.h),
+              SizedBox(height: 28.h),
 
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 24.w),
@@ -125,7 +125,7 @@ class WorkspaceListScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 22.h),
+              SizedBox(height: 20.h),
 
               Expanded(
                 child: Obx(() {
