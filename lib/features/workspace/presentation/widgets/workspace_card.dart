@@ -166,15 +166,13 @@ class WorkspaceCard extends StatelessWidget {
                               child: CircularProgressIndicator(
                                 value: workspace.progress,
                                 strokeWidth: 3.5,
-                                backgroundColor: AppColors.white.withValues(
-                                  alpha: 0.05,
-                                ),
+                                backgroundColor: AppColors.glassBorder,
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   workspace.progress >= 1.0
-                                      ? Colors.greenAccent
+                                      ? AppColors.success
                                       : workspace.progress > 0
                                       ? AppColors.primary
-                                      : AppColors.white.withValues(alpha: 0.1),
+                                      : AppColors.glassBorder,
                                 ),
                               ),
                             ),
@@ -183,7 +181,7 @@ class WorkspaceCard extends StatelessWidget {
                               style: AppTextStyle.labelMedium.copyWith(
                                 fontSize: 10.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.textPrimary,
                               ),
                             ),
                           ],
@@ -199,7 +197,7 @@ class WorkspaceCard extends StatelessWidget {
                             color: workspace.progress == 0
                                 ? AppColors.textSecondary
                                 : workspace.progress >= 1.0
-                                ? Colors.greenAccent
+                                ? AppColors.success
                                 : AppColors.primary,
                             fontWeight: FontWeight.bold,
                             fontSize: 9.sp,

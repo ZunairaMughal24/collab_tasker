@@ -6,11 +6,12 @@ class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      fontFamily: 'Nunito',
+      brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.scaffoldBackground,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.glassBase,

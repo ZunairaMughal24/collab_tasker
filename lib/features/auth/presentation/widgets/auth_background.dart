@@ -11,15 +11,7 @@ class AuthBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF0F172A), Color(0xFF1E1B4B), Color(0xFF0F172A)],
-            ),
-          ),
-        ),
+        const ColoredBox(color: AppColors.background),
 
         Positioned(
           top: -150.h,
@@ -31,7 +23,7 @@ class AuthBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.primary.withValues(alpha: 0.07),
                   AppColors.primary.withValues(alpha: 0),
                 ],
               ),
@@ -48,7 +40,7 @@ class AuthBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppColors.secondary.withValues(alpha: 0.1),
+                  AppColors.secondary.withValues(alpha: 0.05),
                   AppColors.secondary.withValues(alpha: 0),
                 ],
               ),

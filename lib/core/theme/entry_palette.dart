@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Colors used only by the splash and authentication screens.
+/// Palette for the redesigned entry and workspace list screens.
 class EntryPalette {
   static const background = Color(0xFFF6F3ED);
   static const surface = Color(0xFFFFFEFB);

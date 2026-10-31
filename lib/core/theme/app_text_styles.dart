@@ -3,7 +3,8 @@ import 'package:collab_tasker/core/theme/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextStyle {
-  static TextStyle get base => const TextStyle(color: AppColors.textPrimary);
+  static TextStyle get base =>
+      const TextStyle(fontFamily: 'Nunito', color: AppColors.textPrimary);
 
   static TextStyle displayLarge = base.copyWith(
     fontSize: 32.sp,

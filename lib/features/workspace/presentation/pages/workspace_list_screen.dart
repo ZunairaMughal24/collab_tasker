@@ -40,15 +40,13 @@ class WorkspaceListScreen extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.05),
+                          color: AppColors.glassBase,
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.white.withValues(alpha: 0.1),
-                          ),
+                          border: Border.all(color: AppColors.glassBorder),
                         ),
                         child: Icon(
                           Icons.menu_rounded,
-                          color: AppColors.white,
+                          color: AppColors.textPrimary,
                           size: 24.w,
                         ),
                       ),
@@ -82,7 +80,7 @@ class WorkspaceListScreen extends StatelessWidget {
                       },
                       icon: Icon(
                         Icons.notifications_none_rounded,
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         size: 28.w,
                       ),
                     ),
@@ -97,11 +95,9 @@ class WorkspaceListScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 height: 50.h,
                 decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.05),
+                  color: AppColors.glassBase,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: AppColors.white.withValues(alpha: 0.1),
-                  ),
+                  border: Border.all(color: AppColors.glassBorder),
                 ),
                 child: Row(
                   children: [
@@ -253,7 +249,7 @@ class WorkspaceListScreen extends StatelessWidget {
                   ),
                   child: CircleAvatar(
                     radius: 35.r,
-                    backgroundColor: AppColors.white.withValues(alpha: 0.1),
+                    backgroundColor: AppColors.glassBase,
                     child: Icon(
                       Icons.person_rounded,
                       color: AppColors.primary,
@@ -298,7 +294,7 @@ class WorkspaceListScreen extends StatelessWidget {
             onTap: () {},
           ),
           const Divider(
-            color: Colors.white10,
+            color: AppColors.glassBorder,
             indent: 24,
             endIndent: 24,
             height: 40,
@@ -355,12 +351,12 @@ class WorkspaceListScreen extends StatelessWidget {
         onTap: onTap,
         leading: Icon(
           icon,
-          color: isSelected ? AppColors.primary : Colors.white70,
+          color: isSelected ? AppColors.primary : AppColors.textSecondary,
         ),
         title: Text(
           label,
           style: AppTextStyle.bodyMedium.copyWith(
-            color: isSelected ? Colors.white : Colors.white70,
+            color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -394,7 +390,7 @@ class WorkspaceListScreen extends StatelessWidget {
               width: 40.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: AppColors.glassBorder,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -426,16 +422,19 @@ class WorkspaceListScreen extends StatelessWidget {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: isDanger ? AppColors.error : Colors.white),
+      leading: Icon(
+        icon,
+        color: isDanger ? AppColors.error : AppColors.textPrimary,
+      ),
       title: Text(
         title,
         style: AppTextStyle.bodyLarge.copyWith(
-          color: isDanger ? AppColors.error : Colors.white,
+          color: isDanger ? AppColors.error : AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      tileColor: Colors.white.withValues(alpha: 0.05),
+      tileColor: AppColors.glassBase,
     );
   }
 
@@ -459,7 +458,9 @@ class WorkspaceListScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: AppTextStyle.bodyMedium.copyWith(color: Colors.white),
+              style: AppTextStyle.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
           TextButton(

@@ -34,15 +34,13 @@ class AddWorkspaceScreen extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.05),
+                            color: AppColors.glassBase,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.white.withValues(alpha: 0.1),
-                            ),
+                            border: Border.all(color: AppColors.glassBorder),
                           ),
                           child: const Icon(
                             Icons.chevron_left_rounded,
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             size: 28,
                           ),
                         ),
@@ -100,7 +98,7 @@ class AddWorkspaceScreen extends StatelessWidget {
                         ),
 
                         SizedBox(height: 14.h),
-                        const Divider(color: Colors.white10),
+                        const Divider(color: AppColors.glassBorder),
                         SizedBox(height: 12.h),
 
                         _buildSectionHeader(

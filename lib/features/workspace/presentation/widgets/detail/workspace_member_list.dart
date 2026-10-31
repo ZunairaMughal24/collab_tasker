@@ -163,7 +163,7 @@ class WorkspaceMemberList extends StatelessWidget {
               width: 40.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: AppColors.glassBorder,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -208,7 +208,10 @@ class WorkspaceMemberList extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('No', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'No',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -233,16 +236,19 @@ class WorkspaceMemberList extends StatelessWidget {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: isDanger ? AppColors.error : Colors.white),
+      leading: Icon(
+        icon,
+        color: isDanger ? AppColors.error : AppColors.textPrimary,
+      ),
       title: Text(
         title,
         style: AppTextStyle.bodyLarge.copyWith(
-          color: isDanger ? AppColors.error : Colors.white,
+          color: isDanger ? AppColors.error : AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      tileColor: Colors.white.withValues(alpha: 0.05),
+      tileColor: AppColors.glassBase,
     );
   }
 
@@ -263,7 +269,10 @@ class WorkspaceMemberList extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
           ),
           TextButton(
             onPressed: () {

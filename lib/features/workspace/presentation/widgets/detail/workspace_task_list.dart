@@ -67,7 +67,7 @@ class WorkspaceTaskList extends StatelessWidget {
             width: 4.w,
             height: 48.h,
             decoration: BoxDecoration(
-              color: isCompleted ? Colors.greenAccent : AppColors.primary,
+              color: isCompleted ? AppColors.success : AppColors.primary,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -81,7 +81,9 @@ class WorkspaceTaskList extends StatelessWidget {
                   style: AppTextStyle.bodyLarge.copyWith(
                     fontWeight: FontWeight.bold,
                     decoration: isCompleted ? TextDecoration.lineThrough : null,
-                    color: isCompleted ? AppColors.textSecondary : Colors.white,
+                    color: isCompleted
+                        ? AppColors.textSecondary
+                        : AppColors.textPrimary,
                   ),
                 ),
                 SizedBox(height: 4.h),
@@ -120,7 +122,7 @@ class WorkspaceTaskList extends StatelessWidget {
                       controller.updateTaskStatus(task, TaskStatus.pending),
                   icon: Icon(
                     Icons.check_circle_rounded,
-                    color: Colors.greenAccent,
+                    color: AppColors.success,
                     size: 25.w,
                   ),
                   padding: EdgeInsets.zero,
@@ -162,7 +164,7 @@ class WorkspaceTaskList extends StatelessWidget {
               width: 40.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: AppColors.glassBorder,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -200,16 +202,19 @@ class WorkspaceTaskList extends StatelessWidget {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: isDanger ? AppColors.error : Colors.white),
+      leading: Icon(
+        icon,
+        color: isDanger ? AppColors.error : AppColors.textPrimary,
+      ),
       title: Text(
         title,
         style: AppTextStyle.bodyLarge.copyWith(
-          color: isDanger ? AppColors.error : Colors.white,
+          color: isDanger ? AppColors.error : AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      tileColor: Colors.white.withValues(alpha: 0.05),
+      tileColor: AppColors.glassBase,
     );
   }
 
@@ -267,7 +272,10 @@ class WorkspaceTaskList extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
           ),
           TextButton(
             onPressed: () {
