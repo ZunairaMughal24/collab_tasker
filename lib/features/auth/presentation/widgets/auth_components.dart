@@ -24,14 +24,9 @@ class AuthPageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: EntryPalette.background,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      value: EntryPalette.systemOverlayStyle,
       child: Scaffold(
-        backgroundColor: EntryPalette.hero,
+        backgroundColor: EntryPalette.background,
         body: SafeArea(
           bottom: false,
           child: SizedBox.expand(
@@ -51,40 +46,31 @@ class AuthPageLayout extends StatelessWidget {
                           subtitle: subtitle,
                           compact: compactHero,
                         ),
-                        ColoredBox(
-                          color: EntryPalette.hero,
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(
-                              28,
-                              31,
-                              28,
-                              24 + MediaQuery.paddingOf(context).bottom,
-                            ),
-                            decoration: const BoxDecoration(
-                              color: EntryPalette.background,
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(30),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  sectionLabel,
-                                  style: const TextStyle(
-                                    color: EntryPalette.muted,
-                                    fontSize: 11,
-                                    letterSpacing: 1.5,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            28,
+                            12,
+                            28,
+                            24 + MediaQuery.paddingOf(context).bottom,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                sectionLabel,
+                                style: const TextStyle(
+                                  color: EntryPalette.muted,
+                                  fontSize: 11,
+                                  letterSpacing: 1.5,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                const SizedBox(height: 23),
-                                form,
-                                const SizedBox(height: 25),
-                                Center(child: footer),
-                                const SizedBox(height: 7),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 23),
+                              form,
+                              const SizedBox(height: 25),
+                              Center(child: footer),
+                              const SizedBox(height: 7),
+                            ],
                           ),
                         ),
                       ],
@@ -130,7 +116,7 @@ class AuthFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     final outline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(13),
-      borderSide: const BorderSide(color: EntryPalette.border),
+      borderSide: const BorderSide(color: EntryPalette.fieldBorder),
     );
 
     return Column(
@@ -157,9 +143,12 @@ class AuthFormField extends StatelessWidget {
           cursorColor: EntryPalette.accent,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: EntryPalette.muted, fontSize: 14),
+            hintStyle: const TextStyle(
+              color: EntryPalette.fieldHint,
+              fontSize: 14,
+            ),
             filled: true,
-            fillColor: EntryPalette.surface,
+            fillColor: EntryPalette.fieldFill,
             prefixIcon: Icon(icon, color: EntryPalette.muted, size: 19),
             suffixIcon: isPasswordField && onVisibilityTap != null
                 ? IconButton(

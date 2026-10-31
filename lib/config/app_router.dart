@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/features/splash/presentation/pages/splash_screen.dart';
+import 'package:collab_tasker/features/splash/presentation/pages/welcome_screen.dart';
 import 'package:collab_tasker/features/auth/presentation/pages/sign_in_screen.dart';
 import 'package:collab_tasker/features/auth/presentation/pages/sign_up_screen.dart';
 import 'package:collab_tasker/features/workspace/presentation/pages/workspace_list_screen.dart';
@@ -10,6 +11,7 @@ import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String welcome = '/welcome';
   static const String signIn = '/signin';
   static const String signUp = '/signup';
   static const String workspaceList = '/workspaces';
@@ -25,6 +27,11 @@ final router = GoRouter(
       name: 'splash',
       path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      name: 'welcome',
+      path: AppRoutes.welcome,
+      builder: (context, state) => const WelcomeScreen(),
     ),
     GoRoute(
       name: 'sign_in',

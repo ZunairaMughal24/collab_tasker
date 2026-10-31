@@ -13,24 +13,51 @@ import 'package:collab_tasker/config/app_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
-class WorkspaceListScreen extends StatelessWidget {
+bool workspaceMatchesQuery(Workspace workspace, String query) {
+  final normalized = query.trim().toLowerCase();
+  return normalized.isEmpty ||
+      workspace.name.toLowerCase().contains(normalized) ||
+      workspace.description.toLowerCase().contains(normalized);
+}
+
+class WorkspaceListScreen extends StatefulWidget {
   const WorkspaceListScreen({super.key});
 
   @override
+  State<WorkspaceListScreen> createState() => _WorkspaceListScreenState();
+}
+
+class _WorkspaceListScreenState extends State<WorkspaceListScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _searchController = TextEditingController();
+  late final WorkspaceListController controller;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put(WorkspaceListController());
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.put(WorkspaceListController());
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      key: scaffoldKey,
+      key: _scaffoldKey,
       drawer: _buildDrawer(context),
       appBar: WorkspaceTopBar(
         title: 'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
         subtitle: 'Manage your team tasks effectively',
         leadingIcon: Icons.menu_rounded,
         leadingTooltip: 'Open menu',
-        onLeadingPressed: () => scaffoldKey.currentState?.openDrawer(),
+        onLeadingPressed: () => _scaffoldKey.currentState?.openDrawer(),
         actionIcon: Icons.notifications_none_rounded,
         actionTooltip: 'Notifications',
         onActionPressed: () =>
@@ -43,38 +70,56 @@ class WorkspaceListScreen extends StatelessWidget {
             children: [
               SizedBox(height: 20.h),
 
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 24.w),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                height: 50.h,
-                decoration: BoxDecoration(
-                  color: AppColors.glassBase,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.textFieldBorder),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() => _query = value),
+                  style: AppTextStyle.bodyMedium.copyWith(fontSize: 15.sp),
+                  cursorColor: AppColors.primary,
+                  decoration: InputDecoration(
+                    hintText: 'Search workspaces',
+                    hintStyle: AppTextStyle.bodyMedium.copyWith(
+                      color: AppColors.hintText,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
                       color: AppColors.textSecondary,
                       size: 20.w,
                     ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: TextField(
-                        style: AppTextStyle.bodyMedium,
-                        decoration: InputDecoration(
-                          hintText: 'Search Workspaces...',
-                          hintStyle: AppTextStyle.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
+                    suffixIcon: _query.trim().isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Clear search',
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _query = '');
+                            },
+                            icon: const Icon(Icons.close_rounded, size: 19),
                           ),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                        ),
+                    filled: true,
+                    fillColor: AppColors.textFieldFill,
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.h),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: AppColors.textFieldBorder,
                       ),
                     ),
-                  ],
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: AppColors.textFieldBorder,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: AppColors.primary,
+                        width: 1.4,
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -85,6 +130,12 @@ class WorkspaceListScreen extends StatelessWidget {
                   if (controller.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
+
+                  final visibleWorkspaces = controller.workspaces
+                      .where(
+                        (workspace) => workspaceMatchesQuery(workspace, _query),
+                      )
+                      .toList();
 
                   if (controller.workspaces.isEmpty) {
                     return Center(
@@ -117,40 +168,57 @@ class WorkspaceListScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                          SizedBox(height: 22.h),
+                          FilledButton.icon(
+                            onPressed: () =>
+                                context.push(AppRoutes.addWorkspace),
+                            icon: const Icon(Icons.add_rounded, size: 20),
+                            label: const Text('Create workspace'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20.w,
+                                vertical: 13.h,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     );
                   }
 
+                  if (visibleWorkspaces.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No matching workspaces',
+                        style: AppTextStyle.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    );
+                  }
+
                   return ListView.builder(
-                    controller: controller.scrollController,
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    itemCount:
-                        controller.workspaces.length +
-                        (controller.hasMore.value ? 1 : 0),
+                    itemCount: visibleWorkspaces.length,
                     itemBuilder: (context, index) {
-                      if (index < controller.workspaces.length) {
-                        final workspace = controller.workspaces[index];
-                        return WorkspaceCard(
-                          workspace: workspace,
-                          onTap: () => context.push(
-                            AppRoutes.workspaceDetail,
-                            extra: workspace,
-                          ),
-                          onLongPress: () => _showWorkspaceManagementMenu(
-                            context,
-                            controller,
-                            workspace,
-                          ),
-                        );
-                      } else {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24.h),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
+                      final workspace = visibleWorkspaces[index];
+                      return WorkspaceCard(
+                        workspace: workspace,
+                        onTap: () => context.push(
+                          AppRoutes.workspaceDetail,
+                          extra: workspace,
+                        ),
+                        onLongPress: () => _showWorkspaceManagementMenu(
+                          context,
+                          controller,
+                          workspace,
+                        ),
+                      );
                     },
                   );
                 }),
@@ -159,10 +227,27 @@ class WorkspaceListScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.addWorkspace),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      floatingActionButton: Obx(
+        () => controller.workspaces.isEmpty
+            ? const SizedBox.shrink()
+            : FloatingActionButton.extended(
+                onPressed: () => context.push(AppRoutes.addWorkspace),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                icon: const Icon(Icons.add_rounded, size: 22),
+                label: const Text(
+                  'New workspace',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -181,16 +266,7 @@ class WorkspaceListScreen extends StatelessWidget {
               left: 24.w,
               right: 24.w,
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.15),
-                  AppColors.accent.withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            color: AppColors.background,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

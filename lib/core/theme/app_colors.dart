@@ -18,15 +18,6 @@ class AppColors {
   static const Color glassBorder = Color.fromARGB(255, 233, 231, 227);
   static const Color surfaceShadow = Color.fromARGB(18, 100, 114, 107);
 
-  // Gradients
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [EntryPalette.accent, EntryPalette.hero],
-  );
-
-  static const LinearGradient neonGradient = LinearGradient(
-    colors: [EntryPalette.accent, EntryPalette.hero],
-  );
-
   // Text
   static const Color textPrimary = EntryPalette.ink;
   static const Color textSecondary = EntryPalette.muted;
@@ -39,9 +30,9 @@ class AppColors {
   static const Color info = EntryPalette.hero;
 
   // UI Elements
-  static const Color textFieldFill = EntryPalette.surface;
-  static const Color textFieldBorder = Color.fromARGB(255, 231, 233, 227);
-  static const Color hintText = EntryPalette.muted;
+  static const Color textFieldFill = EntryPalette.fieldFill;
+  static const Color textFieldBorder = EntryPalette.fieldBorder;
+  static const Color hintText = EntryPalette.fieldHint;
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color transparent = Colors.transparent;

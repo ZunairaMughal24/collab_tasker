@@ -127,12 +127,12 @@ class AppTextField extends StatelessWidget {
     }
 
     if (iconWidget != null && maxLines > 1) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: 12.h), // Align with hint text
-          iconWidget,
-        ],
+      return Container(
+        width: 48.w,
+        height: (52 + (maxLines - 1) * 21).h,
+        alignment: Alignment.topCenter,
+        padding: EdgeInsets.only(top: 16.h),
+        child: iconWidget,
       );
     }
     return iconWidget;

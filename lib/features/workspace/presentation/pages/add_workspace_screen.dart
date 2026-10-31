@@ -6,7 +6,6 @@ import 'package:collab_tasker/features/auth/presentation/widgets/auth_background
 import 'package:collab_tasker/features/workspace/presentation/controllers/add_workspace_controller.dart';
 import 'package:collab_tasker/widgets/app_textfield.dart';
 import 'package:collab_tasker/widgets/app_button.dart';
-import 'package:collab_tasker/widgets/glass_container.dart';
 import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_top_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -35,76 +34,68 @@ class AddWorkspaceScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: GlassContainer(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 22.h,
-                    ),
-                    borderRadius: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppTextField(
-                          heading: 'Workspace Name',
-                          hintText: 'e.g. Project Phoenix',
-                          controller: controller.nameController,
-                          prefixIcon: Icons.workspace_premium_outlined,
-                        ),
-                        SizedBox(height: 16.h),
-                        AppTextField(
-                          heading: 'Description',
-                          hintText: 'What is this workspace about?',
-                          controller: controller.descriptionController,
-                          maxLines: 4,
-                          prefixIcon: Icons.description_outlined,
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextField(
+                        heading: 'Workspace Name',
+                        hintText: 'e.g. Project Phoenix',
+                        controller: controller.nameController,
+                        prefixIcon: Icons.workspace_premium_outlined,
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        heading: 'Description',
+                        hintText: 'What is this workspace about?',
+                        controller: controller.descriptionController,
+                        maxLines: 4,
+                        prefixIcon: Icons.description_outlined,
+                      ),
 
-                        SizedBox(height: 20.h),
-                        const Divider(color: AppColors.glassBorder),
-                        SizedBox(height: 18.h),
+                      SizedBox(height: 20.h),
+                      const Divider(color: AppColors.glassBorder),
+                      SizedBox(height: 18.h),
 
-                        _buildSectionHeader(
-                          'Add First Task (Optional)',
-                          Icons.task_alt_rounded,
-                        ),
-                        SizedBox(height: 16.h),
-                        AppTextField(
-                          hintText: 'Task Title',
-                          controller: controller.taskTitleController,
-                          prefixIcon: Icons.edit_note_rounded,
-                        ),
-                        SizedBox(height: 16.h),
-                        AppTextField(
-                          hintText: 'Task Description',
-                          controller: controller.taskDescController,
-                          maxLines: 2,
-                          prefixIcon: Icons.notes_rounded,
-                        ),
+                      _buildSectionHeader(
+                        'Add First Task (Optional)',
+                        Icons.task_alt_rounded,
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        hintText: 'Task Title',
+                        controller: controller.taskTitleController,
+                        prefixIcon: Icons.edit_note_rounded,
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        hintText: 'Task Description',
+                        controller: controller.taskDescController,
+                        maxLines: 2,
+                        prefixIcon: Icons.notes_rounded,
+                      ),
 
-                        SizedBox(height: 16.h),
-                        _buildSectionHeader(
-                          'Invite Team Member (Optional)',
-                          Icons.person_add_alt_1_rounded,
-                        ),
-                        SizedBox(height: 16.h),
-                        AppTextField(
-                          hintText: 'member@email.com',
-                          controller: controller.memberEmailController,
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icons.mail_outline_rounded,
-                        ),
+                      SizedBox(height: 16.h),
+                      _buildSectionHeader(
+                        'Invite Team Member (Optional)',
+                        Icons.person_add_alt_1_rounded,
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        hintText: 'member@email.com',
+                        controller: controller.memberEmailController,
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icons.mail_outline_rounded,
+                      ),
 
-                        SizedBox(height: 30.h),
-                        Obx(
-                          () => AppButton(
-                            text: 'Create Workspace',
-                            onPressed: () =>
-                                controller.createWorkspace(context),
-                            isLoading: controller.isLoading.value,
-                          ),
+                      SizedBox(height: 30.h),
+                      Obx(
+                        () => AppButton(
+                          text: 'Create Workspace',
+                          onPressed: () => controller.createWorkspace(context),
+                          isLoading: controller.isLoading.value,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 32.h),

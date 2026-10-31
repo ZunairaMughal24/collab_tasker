@@ -37,7 +37,7 @@ class SplashController extends GetxController {
         } catch (_) {}
         router.go(AppRoutes.workspaceList);
       } else {
-        router.go(AppRoutes.signIn);
+        router.go(AppRoutes.welcome);
       }
     } catch (e) {
       hasError.value = true;

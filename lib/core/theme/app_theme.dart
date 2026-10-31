@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
+import 'package:collab_tasker/core/theme/entry_palette.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
 
 class AppTheme {
@@ -32,13 +33,15 @@ class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: false,
         toolbarHeight: 64,
+        systemOverlayStyle: EntryPalette.systemOverlayStyle,
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.glassBorder,
         thickness: 1,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        filled: false,
+        filled: true,
+        fillColor: AppColors.textFieldFill,
         hintStyle: AppTextStyle.bodyMedium.copyWith(color: AppColors.textMuted),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
