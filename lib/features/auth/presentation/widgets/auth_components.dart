@@ -1,12 +1,15 @@
 import 'package:collab_tasker/core/theme/entry_palette.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AuthPageLayout extends StatelessWidget {
   final String title;
   final String subtitle;
   final Widget form;
   final Widget footer;
+  final bool compactHero;
+  final String sectionLabel;
 
   const AuthPageLayout({
     super.key,
@@ -14,45 +17,79 @@ class AuthPageLayout extends StatelessWidget {
     required this.subtitle,
     required this.form,
     required this.footer,
+    this.compactHero = false,
+    this.sectionLabel = 'YOUR ACCOUNT',
   });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EntryPalette.background,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 440),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AuthHeader(title: title, subtitle: subtitle),
-                    const SizedBox(height: 32),
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: EntryPalette.surface,
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(color: EntryPalette.border),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x0A202923),
-                            blurRadius: 24,
-                            offset: Offset(0, 10),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: EntryPalette.background,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: EntryPalette.hero,
+        body: SafeArea(
+          bottom: false,
+          child: SizedBox.expand(
+            child: ColoredBox(
+              color: EntryPalette.background,
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AuthHeader(
+                          title: title,
+                          subtitle: subtitle,
+                          compact: compactHero,
+                        ),
+                        ColoredBox(
+                          color: EntryPalette.hero,
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(
+                              28,
+                              31,
+                              28,
+                              24 + MediaQuery.paddingOf(context).bottom,
+                            ),
+                            decoration: const BoxDecoration(
+                              color: EntryPalette.background,
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(30),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  sectionLabel,
+                                  style: const TextStyle(
+                                    color: EntryPalette.muted,
+                                    fontSize: 11,
+                                    letterSpacing: 1.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 23),
+                                form,
+                                const SizedBox(height: 25),
+                                Center(child: footer),
+                                const SizedBox(height: 7),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                      child: form,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    Center(child: footer),
-                    const SizedBox(height: 12),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -122,7 +159,7 @@ class AuthFormField extends StatelessWidget {
             hintText: hint,
             hintStyle: const TextStyle(color: EntryPalette.muted, fontSize: 14),
             filled: true,
-            fillColor: EntryPalette.field,
+            fillColor: EntryPalette.surface,
             prefixIcon: Icon(icon, color: EntryPalette.muted, size: 19),
             suffixIcon: isPasswordField && onVisibilityTap != null
                 ? IconButton(
@@ -203,12 +240,19 @@ class AuthPrimaryButton extends StatelessWidget {
                   color: Colors.white,
                 ),
               )
-            : Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 9),
+                  const Icon(Icons.arrow_forward_rounded, size: 18),
+                ],
               ),
       ),
     );
