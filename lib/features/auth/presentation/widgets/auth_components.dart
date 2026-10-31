@@ -1,0 +1,216 @@
+import 'package:collab_tasker/core/theme/entry_palette.dart';
+import 'package:collab_tasker/features/auth/presentation/widgets/auth_header.dart';
+import 'package:flutter/material.dart';
+
+class AuthPageLayout extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget form;
+  final Widget footer;
+
+  const AuthPageLayout({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.form,
+    required this.footer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: EntryPalette.background,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AuthHeader(title: title, subtitle: subtitle),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: EntryPalette.surface,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: EntryPalette.border),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x0A202923),
+                            blurRadius: 24,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: form,
+                    ),
+                    const SizedBox(height: 24),
+                    Center(child: footer),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuthFormField extends StatelessWidget {
+  final String label;
+  final String hint;
+  final TextEditingController controller;
+  final IconData icon;
+  final FormFieldValidator<String>? validator;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  final bool isPasswordField;
+  final VoidCallback? onVisibilityTap;
+  final TextInputAction? textInputAction;
+
+  const AuthFormField({
+    super.key,
+    required this.label,
+    required this.hint,
+    required this.controller,
+    required this.icon,
+    this.validator,
+    this.keyboardType,
+    this.obscureText = false,
+    this.isPasswordField = false,
+    this.onVisibilityTap,
+    this.textInputAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final outline = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(13),
+      borderSide: const BorderSide(color: EntryPalette.border),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: EntryPalette.ink,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          validator: validator,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          textInputAction: textInputAction,
+          autocorrect: false,
+          enableSuggestions: !isPasswordField,
+          style: const TextStyle(color: EntryPalette.ink, fontSize: 15),
+          cursorColor: EntryPalette.accent,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: EntryPalette.muted, fontSize: 14),
+            filled: true,
+            fillColor: EntryPalette.field,
+            prefixIcon: Icon(icon, color: EntryPalette.muted, size: 19),
+            suffixIcon: isPasswordField && onVisibilityTap != null
+                ? IconButton(
+                    tooltip: obscureText ? 'Show password' : 'Hide password',
+                    onPressed: onVisibilityTap,
+                    icon: Icon(
+                      obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: EntryPalette.muted,
+                      size: 20,
+                    ),
+                  )
+                : null,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            border: outline,
+            enabledBorder: outline,
+            focusedBorder: outline.copyWith(
+              borderSide: const BorderSide(
+                color: EntryPalette.accent,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: outline.copyWith(
+              borderSide: const BorderSide(color: EntryPalette.error),
+            ),
+            focusedErrorBorder: outline.copyWith(
+              borderSide: const BorderSide(
+                color: EntryPalette.error,
+                width: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AuthPrimaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+  final bool isLoading;
+
+  const AuthPrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    required this.isLoading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: EntryPalette.accent,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: EntryPalette.accent,
+          disabledForegroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(13),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 21,
+                height: 21,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+      ),
+    );
+  }
+}

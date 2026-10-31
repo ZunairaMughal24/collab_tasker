@@ -53,7 +53,9 @@ class WorkspaceDetailController extends GetxController {
           if (doc.exists && doc.data() != null) {
             memberProfiles[uid] = doc.data()!;
           }
-        } catch (e) {}
+        } catch (e) {
+          debugPrint('Failed to load member profile $uid: $e');
+        }
       }
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collab_tasker/core/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +19,11 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  NotificationService().initialize();
+  unawaited(
+    NotificationService().initialize().catchError((Object error) {
+      debugPrint('Notification initialization failed: $error');
+    }),
+  );
   runApp(const MyApp());
 }
 
