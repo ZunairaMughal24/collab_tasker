@@ -26,9 +26,12 @@ class AppTheme {
         labelMedium: AppTextStyle.labelMedium,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
-        centerTitle: true,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        toolbarHeight: 64,
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.glassBorder,

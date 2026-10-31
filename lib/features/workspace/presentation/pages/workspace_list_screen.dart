@@ -5,6 +5,7 @@ import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_list_controller.dart';
 import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_card.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_top_bar.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -24,71 +25,23 @@ class WorkspaceListScreen extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       drawer: _buildDrawer(context),
+      appBar: WorkspaceTopBar(
+        title: 'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
+        subtitle: 'Manage your team tasks effectively',
+        leadingIcon: Icons.menu_rounded,
+        leadingTooltip: 'Open menu',
+        onLeadingPressed: () => scaffoldKey.currentState?.openDrawer(),
+        actionIcon: Icons.notifications_none_rounded,
+        actionTooltip: 'Notifications',
+        onActionPressed: () =>
+            AppSnackbar.showSuccess('Notifications coming soon'),
+      ),
       body: AuthBackground(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20.h),
-
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => scaffoldKey.currentState?.openDrawer(),
-                      child: Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.glassBase,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.glassBorder),
-                        ),
-                        child: Icon(
-                          Icons.menu_rounded,
-                          color: AppColors.textPrimary,
-                          size: 24.w,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
-                            style: AppTextStyle.displayMedium.copyWith(
-                              fontSize: 24.sp,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            'Manage your team tasks effectively',
-                            style: AppTextStyle.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 14.sp,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        AppSnackbar.showSuccess('Notifications coming soon');
-                      },
-                      icon: Icon(
-                        Icons.notifications_none_rounded,
-                        color: AppColors.textPrimary,
-                        size: 28.w,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 28.h),
 
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 24.w),

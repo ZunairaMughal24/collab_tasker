@@ -7,6 +7,7 @@ import 'package:collab_tasker/features/workspace/presentation/controllers/add_wo
 import 'package:collab_tasker/widgets/app_textfield.dart';
 import 'package:collab_tasker/widgets/app_button.dart';
 import 'package:collab_tasker/widgets/glass_container.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_top_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,6 +19,13 @@ class AddWorkspaceScreen extends StatelessWidget {
     final controller = Get.put(AddWorkspaceController());
 
     return Scaffold(
+      appBar: WorkspaceTopBar(
+        title: 'Create Workspace',
+        subtitle: 'Bring your team together',
+        leadingIcon: Icons.arrow_back_rounded,
+        leadingTooltip: 'Back to workspaces',
+        onLeadingPressed: () => context.pop(),
+      ),
       body: AuthBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -25,52 +33,6 @@ class AddWorkspaceScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => context.pop(),
-                        child: Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            color: AppColors.glassBase,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.glassBorder),
-                          ),
-                          child: const Icon(
-                            Icons.chevron_left_rounded,
-                            color: AppColors.textPrimary,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Create Workspace',
-                              style: AppTextStyle.displayMedium.copyWith(
-                                fontSize: 23.sp,
-                              ),
-                            ),
-                            Text(
-                              'Bring your team together',
-                              style: AppTextStyle.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 24.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: GlassContainer(
