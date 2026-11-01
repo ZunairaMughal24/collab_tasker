@@ -3,7 +3,7 @@ import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/features/workspace/data/repositories/workspace_repository_impl.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace_task.dart';
-import 'package:collab_tasker/features/workspace/presentation/widgets/demo_avatar.dart';
+import 'package:collab_tasker/widgets/demo_avatar.dart';
 import 'package:flutter/material.dart';
 
 class WorkspaceScheduleView extends StatefulWidget {
@@ -71,7 +71,7 @@ class _WorkspaceScheduleViewState extends State<WorkspaceScheduleView> {
                 style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 21,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
@@ -136,7 +136,7 @@ class _WorkspaceScheduleViewState extends State<WorkspaceScheduleView> {
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
               style: AppTextStyle.cardSubtitle.copyWith(
                 color: AppColors.textPrimary,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
               items: [
                 for (final workspace in workspaces)
@@ -209,7 +209,7 @@ class _WorkspaceScheduleViewState extends State<WorkspaceScheduleView> {
                         fontFamily: 'Nunito',
                         color: AppColors.textPrimary,
                         fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -260,7 +260,7 @@ class _WeekPicker extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.cardSubtitle.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -297,7 +297,7 @@ class _WeekPicker extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 12,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -366,7 +366,7 @@ class _DayCell extends StatelessWidget {
               style: AppTextStyle.cardMeta.copyWith(
                 color: selected ? Colors.white : AppColors.textPrimary,
                 fontSize: 14,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

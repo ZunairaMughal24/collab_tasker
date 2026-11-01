@@ -1,5 +1,5 @@
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
-import 'package:collab_tasker/features/workspace/presentation/pages/workspace_list_screen.dart';
+import 'package:collab_tasker/features/workspace/presentation/workspace_list_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
