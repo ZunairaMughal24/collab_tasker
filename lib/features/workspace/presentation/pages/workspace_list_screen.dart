@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:collab_tasker/core/theme/app_colors.dart';
+import 'package:collab_tasker/core/theme/entry_palette.dart';
 import 'package:collab_tasker/core/theme/app_text_styles.dart';
 import 'package:collab_tasker/features/auth/presentation/widgets/auth_background.dart';
 import 'package:collab_tasker/features/workspace/presentation/controllers/workspace_list_controller.dart';
 import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_card.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/home_bottom_nav.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/workspace_schedule_view.dart';
+import 'package:collab_tasker/features/workspace/presentation/widgets/demo_avatar.dart';
 import 'package:collab_tasker/features/workspace/domain/entities/workspace.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collab_tasker/config/app_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:collab_tasker/core/utils/app_snackbar.dart';
 
 bool workspaceMatchesQuery(Workspace workspace, String query) {
   final normalized = query.trim().toLowerCase();
@@ -20,12 +22,14 @@ bool workspaceMatchesQuery(Workspace workspace, String query) {
       workspace.description.toLowerCase().contains(normalized);
 }
 
-enum WorkspaceFilter { all, inProgress, completed }
+enum WorkspaceFilter { all, notStarted, inProgress, completed }
 
 bool workspaceMatchesFilter(Workspace workspace, WorkspaceFilter filter) {
   switch (filter) {
     case WorkspaceFilter.all:
       return true;
+    case WorkspaceFilter.notStarted:
+      return workspace.totalTasks == 0;
     case WorkspaceFilter.inProgress:
       return workspace.totalTasks > 0 &&
           workspace.completedTasks < workspace.totalTasks;
@@ -55,7 +59,11 @@ class _WorkspaceListScreenState extends State<WorkspaceListScreen> {
   final _searchController = TextEditingController();
   late final WorkspaceListController controller;
   String _query = '';
+  bool _showSearch = false;
   WorkspaceFilter _filter = WorkspaceFilter.all;
+  bool _showSpacesOnly = false;
+  bool _showSchedule = false;
+  int _navVersion = 0;
 
   @override
   void initState() {
@@ -75,307 +83,459 @@ class _WorkspaceListScreenState extends State<WorkspaceListScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
+      extendBody: true,
       drawer: _buildDrawer(context),
       appBar: AppBar(
-        backgroundColor: AppColors.secondary,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         toolbarHeight: 64,
         leadingWidth: 56,
         titleSpacing: 0,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppColors.secondary,
-          statusBarIconBrightness: Brightness.light,
-          systemStatusBarContrastEnforced: false,
-          systemNavigationBarColor: AppColors.background,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarContrastEnforced: false,
-        ),
-        leading: IconButton(
-          tooltip: 'Open menu',
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          icon: const Icon(Icons.menu_rounded, size: 24),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Hello, ${user?.displayName?.split(' ').first ?? 'Member'}!',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+        systemOverlayStyle: EntryPalette.systemOverlayStyle,
+        centerTitle: _showSchedule,
+        leading: _showSchedule
+            ? IconButton(
+                tooltip: 'Back to home',
+                onPressed: () => setState(() => _showSchedule = false),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 19),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(left: 16, right: 4),
+                child: InkWell(
+                  onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                  borderRadius: BorderRadius.circular(50),
+                  child: const DemoAvatar(index: 0, size: 38),
+                ),
               ),
-            ),
-            const Text(
-              'Your work, in one place',
-              style: TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 12,
-                color: Color(0xFFD1DDD3),
+        title: _showSchedule
+            ? const Text(
+                'Task schedule',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Hi, ${user?.displayName?.split(' ').first ?? 'there'}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.homeGreeting,
+                  ),
+                  Text(
+                    'Ready to make progress today?',
+                    style: AppTextStyle.homeSubtitle,
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
         actionsPadding: const EdgeInsets.only(right: 8),
         actions: [
-          IconButton(
-            tooltip: 'Notifications',
-            onPressed: () =>
-                AppSnackbar.showSuccess('Notifications coming soon'),
-            icon: const Icon(Icons.notifications_none_rounded, size: 24),
-          ),
+          if (!_showSchedule)
+            IconButton(
+              tooltip: 'Notifications',
+              onPressed: () => _showNotifications(context),
+              icon: const Icon(Icons.notifications_none_rounded, size: 20),
+            )
+          else
+            IconButton(
+              tooltip: 'About schedule',
+              onPressed: () => _showScheduleHelp(context),
+              icon: const Icon(Icons.help_outline_rounded, size: 22),
+            ),
         ],
       ),
-      body: AuthBackground(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 24.h),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.secondary, Color(0xFF385447)],
-                  ),
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(24),
-                  ),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) => setState(() => _query = value),
-                  style: AppTextStyle.bodyMedium.copyWith(fontSize: 15.sp),
-                  cursorColor: AppColors.primary,
-                  decoration: InputDecoration(
-                    hintText: 'Search workspaces',
-                    hintStyle: AppTextStyle.bodyMedium.copyWith(
-                      color: AppColors.hintText,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: AppColors.textSecondary,
-                      size: 20.w,
-                    ),
-                    suffixIcon: _query.trim().isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: 'Clear search',
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _query = '');
-                            },
-                            icon: const Icon(Icons.close_rounded, size: 19),
-                          ),
-                    filled: true,
-                    fillColor: AppColors.glassBase,
-                    contentPadding: EdgeInsets.symmetric(vertical: 15.h),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.glassBase),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.glassBase),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                        color: AppColors.primary,
-                        width: 1.4,
-                      ),
+      body: _showSchedule
+          ? AuthBackground(
+              child: SafeArea(
+                child: Obx(
+                  () => WorkspaceScheduleView(
+                    workspaces: controller.workspaces.toList(),
+                    onCreateWorkspace: () =>
+                        context.push(AppRoutes.addWorkspace),
+                    onOpenWorkspace: (workspace) => context.push(
+                      AppRoutes.workspaceDetail,
+                      extra: workspace,
                     ),
                   ),
                 ),
               ),
-
-              SizedBox(height: 22.h),
-
-              Expanded(
-                child: Obx(() {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final visibleWorkspaces = controller.workspaces
-                      .where(
-                        (workspace) =>
-                            workspaceMatchesQuery(workspace, _query) &&
-                            workspaceMatchesFilter(workspace, _filter),
-                      )
-                      .toList();
-
-                  if (controller.workspaces.isEmpty) {
-                    return _WorkspaceEmptyState(
-                      onCreate: () => context.push(AppRoutes.addWorkspace),
-                    );
-                  }
-
-                  final recentWorkspace = mostRecentlyActiveWorkspace(
-                    controller.workspaces,
-                  );
-
-                  return ListView.builder(
-                    padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 100.h),
-                    itemCount: visibleWorkspaces.isEmpty
-                        ? 2
-                        : visibleWorkspaces.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _WorkspaceOverview(
-                              workspaces: controller.workspaces,
+            )
+          : AuthBackground(
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_showSearch)
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 0),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (value) => setState(() => _query = value),
+                          style: AppTextStyle.bodyMedium.copyWith(
+                            fontSize: 15.sp,
+                          ),
+                          cursorColor: AppColors.primary,
+                          decoration: InputDecoration(
+                            hintText: 'Search workspaces',
+                            hintStyle: AppTextStyle.bodyMedium.copyWith(
+                              color: AppColors.hintText,
                             ),
-                            if (_query.trim().isEmpty &&
-                                _filter == WorkspaceFilter.all) ...[
-                              SizedBox(height: 24.h),
-                              _FeaturedWorkspaceCard(
-                                workspace: recentWorkspace,
-                                onTap: () => context.push(
-                                  AppRoutes.workspaceDetail,
-                                  extra: recentWorkspace,
-                                ),
-                              ),
-                            ],
-                            SizedBox(height: 30.h),
-                            Row(
-                              children: [
-                                Text(
-                                  'Workspaces',
-                                  style: AppTextStyle.displayMedium.copyWith(
-                                    color: AppColors.textPrimary,
-                                    fontSize: 21.sp,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  '${visibleWorkspaces.length} total',
-                                  style: AppTextStyle.bodyMedium.copyWith(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 12.sp,
-                                  ),
-                                ),
-                              ],
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: AppColors.textSecondary,
+                              size: 20.w,
                             ),
-                            SizedBox(height: 16.h),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: WorkspaceFilter.values.map((filter) {
-                                  final selected = _filter == filter;
-                                  final label = switch (filter) {
-                                    WorkspaceFilter.all => 'All',
-                                    WorkspaceFilter.inProgress => 'In progress',
-                                    WorkspaceFilter.completed => 'Done',
-                                  };
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: 23.w),
-                                    child: InkWell(
-                                      onTap: () =>
-                                          setState(() => _filter = filter),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            label,
-                                            style: TextStyle(
-                                              fontFamily: 'Nunito',
-                                              fontSize: 13.sp,
-                                              fontWeight: selected
-                                                  ? FontWeight.w800
-                                                  : FontWeight.w600,
-                                              color: selected
-                                                  ? AppColors.textPrimary
-                                                  : AppColors.textSecondary,
-                                            ),
-                                          ),
-                                          SizedBox(height: 9.h),
-                                          Container(
-                                            height: 2.h,
-                                            width: 20.w,
-                                            color: selected
-                                                ? AppColors.primary
-                                                : Colors.transparent,
-                                          ),
-                                        ],
-                                      ),
+                            suffixIcon: _query.trim().isEmpty
+                                ? null
+                                : IconButton(
+                                    tooltip: 'Clear search',
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      setState(() => _query = '');
+                                    },
+                                    icon: const Icon(
+                                      Icons.close_rounded,
+                                      size: 19,
                                     ),
-                                  );
-                                }).toList(),
+                                  ),
+                            filled: true,
+                            fillColor: AppColors.glassBase,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 15.h,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppColors.glassBase,
                               ),
                             ),
-                            SizedBox(height: 12.h),
-                          ],
-                        );
-                      }
-                      if (visibleWorkspaces.isEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.only(top: 36.h),
-                          child: Center(
-                            child: Text(
-                              _query.trim().isNotEmpty
-                                  ? 'No workspaces match your search'
-                                  : 'No workspaces in this view',
-                              style: AppTextStyle.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppColors.glassBase,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(
+                                color: AppColors.primary,
+                                width: 1.4,
                               ),
                             ),
                           ),
+                        ),
+                      ),
+
+                    SizedBox(height: 12.h),
+
+                    Expanded(
+                      child: Obx(() {
+                        if (controller.isLoading.value) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        final visibleWorkspaces = controller.workspaces
+                            .where(
+                              (workspace) =>
+                                  workspaceMatchesQuery(workspace, _query) &&
+                                  workspaceMatchesFilter(workspace, _filter),
+                            )
+                            .toList();
+
+                        if (controller.workspaces.isEmpty) {
+                          return _WorkspaceEmptyState(
+                            onCreate: () =>
+                                context.push(AppRoutes.addWorkspace),
+                          );
+                        }
+
+                        final recentWorkspace = mostRecentlyActiveWorkspace(
+                          controller.workspaces,
                         );
-                      }
-                      final workspace = visibleWorkspaces[index - 1];
-                      return WorkspaceCard(
-                        workspace: workspace,
-                        onTap: () => context.push(
-                          AppRoutes.workspaceDetail,
-                          extra: workspace,
-                        ),
-                        onLongPress: () => _showWorkspaceManagementMenu(
-                          context,
-                          controller,
-                          workspace,
-                        ),
-                      );
-                    },
-                  );
-                }),
+
+                        final showScheduleShortcut =
+                            !_showSpacesOnly &&
+                            _query.trim().isEmpty &&
+                            _filter == WorkspaceFilter.all;
+                        return ListView.builder(
+                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 100.h),
+                          itemCount: visibleWorkspaces.isEmpty
+                              ? 2
+                              : visibleWorkspaces.length +
+                                    1 +
+                                    (showScheduleShortcut ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (!_showSpacesOnly &&
+                                      _query.trim().isEmpty &&
+                                      _filter == WorkspaceFilter.all) ...[
+                                    FeaturedWorkspaceCard(
+                                      workspace: recentWorkspace,
+                                      onTap: () => context.push(
+                                        AppRoutes.workspaceDetail,
+                                        extra: recentWorkspace,
+                                      ),
+                                    ),
+                                  ],
+                                  SizedBox(height: 20.h),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        _showSpacesOnly
+                                            ? 'Your workspaces'
+                                            : 'Workspaces',
+                                        style: AppTextStyle.homeSection,
+                                      ),
+                                      const Spacer(),
+                                      IconButton(
+                                        tooltip: 'Search workspaces',
+                                        onPressed: () {
+                                          if (_showSearch) {
+                                            _searchController.clear();
+                                          }
+                                          setState(() {
+                                            _showSearch = !_showSearch;
+                                            if (!_showSearch) _query = '';
+                                          });
+                                        },
+                                        icon: const Icon(
+                                          Icons.search_rounded,
+                                          color: AppColors.textPrimary,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      IconButton.filledTonal(
+                                        tooltip: 'Create workspace',
+                                        onPressed: () => context.push(
+                                          AppRoutes.addWorkspace,
+                                        ),
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: AppColors.glassBase,
+                                          foregroundColor:
+                                              AppColors.textPrimary,
+                                        ),
+                                        icon: const Icon(
+                                          Icons.add_rounded,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: WorkspaceFilter.values.map((
+                                        filter,
+                                      ) {
+                                        final selected = _filter == filter;
+                                        final label = switch (filter) {
+                                          WorkspaceFilter.all => 'All',
+                                          WorkspaceFilter.notStarted =>
+                                            'Not started',
+                                          WorkspaceFilter.inProgress =>
+                                            'Active',
+                                          WorkspaceFilter.completed =>
+                                            'Completed',
+                                        };
+                                        return Padding(
+                                          padding: EdgeInsets.only(right: 8.w),
+                                          child: ChoiceChip(
+                                            label: Text(label),
+                                            selected: selected,
+                                            onSelected: (_) => setState(
+                                              () => _filter = filter,
+                                            ),
+                                            showCheckmark: false,
+                                            selectedColor: AppColors.primary,
+                                            backgroundColor:
+                                                AppColors.glassBase,
+                                            side: BorderSide(
+                                              color: selected
+                                                  ? AppColors.primary
+                                                  : AppColors.glassBorder,
+                                            ),
+                                            labelStyle: AppTextStyle.chipLabel
+                                                .copyWith(
+                                                  color: selected
+                                                      ? Colors.white
+                                                      : AppColors.textSecondary,
+                                                ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 7.w,
+                                              vertical: 1.h,
+                                            ),
+                                            shape: const StadiumBorder(),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  SizedBox(height: 12.h),
+                                ],
+                              );
+                            }
+                            if (visibleWorkspaces.isEmpty) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 36.h),
+                                child: Center(
+                                  child: Text(
+                                    _query.trim().isNotEmpty
+                                        ? 'No workspaces match your search'
+                                        : 'No workspaces in this view',
+                                    style: AppTextStyle.bodyMedium.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            if (index == visibleWorkspaces.length + 1) {
+                              return _ScheduleShortcutCard(
+                                onTap: () =>
+                                    setState(() => _showSchedule = true),
+                              );
+                            }
+                            final workspace = visibleWorkspaces[index - 1];
+                            return WorkspaceCard(
+                              workspace: workspace,
+                              tone: index - 1,
+                              onTap: () => context.push(
+                                AppRoutes.workspaceDetail,
+                                extra: workspace,
+                              ),
+                              onLongPress: () => _showWorkspaceManagementMenu(
+                                context,
+                                controller,
+                                workspace,
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      bottomNavigationBar: HomeBottomNav(
+        key: ValueKey(_navVersion),
+        selectedIndex: _showSchedule ? 2 : (_showSpacesOnly ? 1 : 0),
+        onHome: () {
+          _searchController.clear();
+          setState(() {
+            _showSchedule = false;
+            _showSpacesOnly = false;
+            _query = '';
+            _filter = WorkspaceFilter.all;
+          });
+        },
+        onWorkspaces: () => setState(() {
+          _showSchedule = false;
+          _showSpacesOnly = true;
+        }),
+        onSchedule: () => setState(() => _showSchedule = true),
+        onProfile: () {
+          setState(() => _navVersion++);
+          _scaffoldKey.currentState?.openDrawer();
+        },
+      ),
+    );
+  }
+
+  void _showNotifications(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 38),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Notifications',
+                style: AppTextStyle.displayMedium.copyWith(fontSize: 22),
+              ),
+              const SizedBox(height: 26),
+              const Center(
+                child: Icon(
+                  Icons.notifications_none_rounded,
+                  size: 36,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Center(
+                child: Text(
+                  'You’re all caught up',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: Obx(
-        () => controller.workspaces.isEmpty
-            ? const SizedBox.shrink()
-            : FloatingActionButton.extended(
-                onPressed: () => context.push(AppRoutes.addWorkspace),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                icon: const Icon(Icons.add_rounded, size: 22),
-                label: const Text(
-                  'New workspace',
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+    );
+  }
+
+  void _showScheduleHelp(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: AppColors.background,
+      builder: (context) => const SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(24, 8, 24, 36),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'About your schedule',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
+              SizedBox(height: 9),
+              Text(
+                'Tasks with due dates appear on the selected day. Tasks without a due date are listed below.',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -653,164 +813,186 @@ class _WorkspaceListScreenState extends State<WorkspaceListScreen> {
   }
 }
 
-class _WorkspaceOverview extends StatelessWidget {
-  const _WorkspaceOverview({required this.workspaces});
-
-  final List<Workspace> workspaces;
-
-  @override
-  Widget build(BuildContext context) {
-    final totalTasks = workspaces.fold<int>(
-      0,
-      (total, workspace) => total + workspace.totalTasks,
-    );
-    final completedTasks = workspaces.fold<int>(
-      0,
-      (total, workspace) => total + workspace.completedTasks,
-    );
-    final openTasks = (totalTasks - completedTasks).clamp(0, totalTasks);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Overview',
-          style: AppTextStyle.displayMedium.copyWith(
-            color: AppColors.textPrimary,
-            fontSize: 21.sp,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        SizedBox(height: 17.h),
-        Row(
-          children: [
-            _OverviewMetric(label: 'Spaces', value: workspaces.length),
-            _OverviewDivider(),
-            _OverviewMetric(label: 'To do', value: openTasks),
-            _OverviewDivider(),
-            _OverviewMetric(label: 'Done', value: completedTasks),
-          ],
-        ),
-        SizedBox(height: 22.h),
-        Container(height: 1, color: AppColors.glassBorder),
-      ],
-    );
-  }
-}
-
-class _FeaturedWorkspaceCard extends StatelessWidget {
-  const _FeaturedWorkspaceCard({required this.workspace, required this.onTap});
+class FeaturedWorkspaceCard extends StatelessWidget {
+  const FeaturedWorkspaceCard({
+    super.key,
+    required this.workspace,
+    required this.onTap,
+  });
 
   final Workspace workspace;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final remaining = (workspace.totalTasks - workspace.completedTasks).clamp(
-      0,
-      workspace.totalTasks,
-    );
-    final detail = workspace.totalTasks == 0
-        ? 'Ready for your first task'
-        : remaining == 0
-        ? 'All tasks completed'
-        : '$remaining ${remaining == 1 ? 'task' : 'tasks'} left to finish';
-    final progress = workspace.progress.clamp(0.0, 1.0);
-    final activityAt = workspace.lastActivityAt ?? workspace.createdAt;
-    final today = DateUtils.dateOnly(DateTime.now());
-    final activityDay = DateUtils.dateOnly(activityAt);
-    final activityLabel = activityDay == today
-        ? 'Today'
-        : activityDay == today.subtract(const Duration(days: 1))
-        ? 'Yesterday'
-        : MaterialLocalizations.of(context).formatShortDate(activityAt);
-
     return Material(
-      color: const Color(0xFFE8EEE7),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFD7E2D7)),
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF3DFD2), Color(0xFFE9C7B6), Color(0xFFF5E7DA)],
+          ),
+          borderRadius: BorderRadius.circular(19),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(19),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 15.h, 12.w, 14.h),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 75.w,
+                    color: Colors.white.withValues(alpha: 0.43),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 13.r,
+                          backgroundColor: AppColors.primary,
+                          child: const Icon(
+                            Icons.groups_rounded,
+                            size: 15,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 7.w),
+                        Text(
+                          'Your team space',
+                          style: AppTextStyle.bannerTitle,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.h),
+                    SizedBox(
+                      width: 220.w,
+                      child: Text(
+                        'Stay on top of tasks and keep your team moving.',
+                        maxLines: 2,
+                        style: AppTextStyle.bannerBody,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.arrow_outward_rounded,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                          SizedBox(width: 5.w),
+                          Text(
+                            'Open workspace',
+                            style: AppTextStyle.cardMeta.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class _ScheduleShortcutCard extends StatelessWidget {
+  const _ScheduleShortcutCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFE9EEE8),
+      borderRadius: BorderRadius.circular(19),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(19),
         child: Padding(
-          padding: EdgeInsets.all(18.w),
+          padding: EdgeInsets.fromLTRB(15.w, 13.h, 13.w, 14.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Text(
-                    'CONTINUE',
-                    style: TextStyle(
-                      fontFamily: 'Nunito',
-                      color: AppColors.primary,
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 6.h,
                     ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.88),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Text('Your schedule', style: AppTextStyle.cardMeta),
                   ),
                   const Spacer(),
-                  Text(
-                    activityLabel,
-                    style: TextStyle(
-                      fontFamily: 'Nunito',
-                      color: AppColors.textSecondary,
-                      fontSize: 11.sp,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          workspace.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
-                            color: AppColors.textPrimary,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          detail,
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
-                            color: AppColors.textSecondary,
-                            fontSize: 12.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
                   const Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 21,
-                    color: AppColors.primary,
+                    Icons.keyboard_arrow_up_rounded,
+                    size: 19,
+                    color: AppColors.textPrimary,
                   ),
                 ],
               ),
               SizedBox(height: 14.h),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 4.h,
-                  backgroundColor: const Color(0xFFCCD9CC),
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    AppColors.primary,
+              Text('Plan your week', style: AppTextStyle.cardTitle),
+              SizedBox(height: 2.h),
+              Text(
+                'See tasks and keep your team on track',
+                style: AppTextStyle.cardSubtitle,
+              ),
+              SizedBox(height: 16.h),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: 15.w,
+                    color: AppColors.success,
                   ),
-                ),
+                  SizedBox(width: 6.w),
+                  Text(
+                    'Open schedule',
+                    style: AppTextStyle.cardMeta.copyWith(
+                      color: AppColors.success,
+                    ),
+                  ),
+                  const Spacer(),
+                  CircleAvatar(
+                    radius: 16.r,
+                    backgroundColor: AppColors.success,
+                    child: const Icon(
+                      Icons.arrow_outward_rounded,
+                      size: 17,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -828,7 +1010,7 @@ class _WorkspaceEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 40.h),
+      padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 120.h),
       children: [
         Text(
           'YOUR WORKSPACES',
@@ -861,9 +1043,12 @@ class _WorkspaceEmptyState extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(21.w),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0E5D9),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFE8D9C9)),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.primary, Color(0xFFC87553)],
+            ),
+            borderRadius: BorderRadius.circular(22),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -872,12 +1057,12 @@ class _WorkspaceEmptyState extends StatelessWidget {
                 width: 46.w,
                 height: 46.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: Colors.white.withValues(alpha: 0.17),
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
                   Icons.space_dashboard_outlined,
-                  color: AppColors.primary,
+                  color: Colors.white,
                   size: 23.w,
                 ),
               ),
@@ -885,7 +1070,7 @@ class _WorkspaceEmptyState extends StatelessWidget {
               Text(
                 'Start a workspace',
                 style: AppTextStyle.bodyLarge.copyWith(
-                  color: AppColors.textPrimary,
+                  color: Colors.white,
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w800,
                 ),
@@ -894,7 +1079,7 @@ class _WorkspaceEmptyState extends StatelessWidget {
               Text(
                 'Add tasks, share them with your team, and see what is done.',
                 style: AppTextStyle.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+                  color: const Color(0xFFFFE8DD),
                   fontSize: 13.sp,
                 ),
               ),
@@ -906,8 +1091,8 @@ class _WorkspaceEmptyState extends StatelessWidget {
                   icon: const Icon(Icons.add_rounded, size: 19),
                   label: const Text('Create workspace'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
                     padding: EdgeInsets.symmetric(vertical: 14.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -919,55 +1104,6 @@ class _WorkspaceEmptyState extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _OverviewMetric extends StatelessWidget {
-  const _OverviewMetric({required this.label, required this.value});
-
-  final String label;
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$value',
-            style: AppTextStyle.displayMedium.copyWith(
-              color: AppColors.textPrimary,
-              fontSize: 25.sp,
-              fontWeight: FontWeight.w800,
-              height: 1,
-            ),
-          ),
-          SizedBox(height: 7.h),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyle.bodySmall.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 11.sp,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OverviewDivider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 37.h,
-      margin: EdgeInsets.only(right: 16.w),
-      color: AppColors.glassBorder,
     );
   }
 }

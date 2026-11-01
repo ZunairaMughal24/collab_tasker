@@ -27,6 +27,11 @@ void main() {
     final completed = workspace.copyWith(totalTasks: 4, completedTasks: 4);
     expect(workspaceMatchesFilter(workspace, WorkspaceFilter.all), isTrue);
     expect(
+      workspaceMatchesFilter(workspace, WorkspaceFilter.notStarted),
+      isTrue,
+    );
+    expect(workspaceMatchesFilter(active, WorkspaceFilter.notStarted), isFalse);
+    expect(
       workspaceMatchesFilter(workspace, WorkspaceFilter.inProgress),
       isFalse,
     );

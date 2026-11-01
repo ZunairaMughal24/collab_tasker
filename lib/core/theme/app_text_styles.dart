@@ -6,6 +6,36 @@ class AppTextStyle {
   static TextStyle get base =>
       const TextStyle(fontFamily: 'Nunito', color: AppColors.textPrimary);
 
+  // Shared type scale for the home and workspace surfaces.
+  static TextStyle get homeGreeting =>
+      base.copyWith(fontSize: 18.sp, fontWeight: FontWeight.w800, height: 1.2);
+  static TextStyle get homeSubtitle => base.copyWith(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textSecondary,
+    height: 1.25,
+  );
+  static TextStyle get homeSection =>
+      base.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w800, height: 1.2);
+  static TextStyle get bannerTitle =>
+      base.copyWith(fontSize: 18.sp, fontWeight: FontWeight.w800, height: 1.2);
+  static TextStyle get bannerBody =>
+      base.copyWith(fontSize: 13.sp, fontWeight: FontWeight.w500, height: 1.3);
+  static TextStyle get cardTitle =>
+      base.copyWith(fontSize: 19.sp, fontWeight: FontWeight.w800, height: 1.2);
+  static TextStyle get cardSubtitle => base.copyWith(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textSecondary,
+    height: 1.25,
+  );
+  static TextStyle get cardMeta =>
+      base.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w700, height: 1.2);
+  static TextStyle get chipLabel =>
+      base.copyWith(fontSize: 13.sp, fontWeight: FontWeight.w700, height: 1.2);
+  static TextStyle get navLabel =>
+      base.copyWith(fontSize: 12, fontWeight: FontWeight.w700);
+
   static TextStyle displayLarge = base.copyWith(
     fontSize: 32.sp,
     fontWeight: FontWeight.w800,

@@ -99,7 +99,16 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.runAsync(() async {
+      for (var index = 0; index < 4; index++) {
+        await precacheImage(
+          AssetImage('assets/images/avatar_$index.png'),
+          tester.element(find.byType(MaterialApp)),
+        );
+      }
+    });
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('surface_preview.png'),
